@@ -1,0 +1,9 @@
+D:\ymnets.AdminSystem\trunk\Apps.CodeHelper\bin\Release\Apps.CodeHelper.exe.config
+D:\ymnets.AdminSystem\trunk\Apps.CodeHelper\bin\Release\Apps.CodeHelper.exe
+D:\ymnets.AdminSystem\trunk\Apps.CodeHelper\bin\Release\Apps.CodeHelper.pdb
+D:\ymnets.AdminSystem\trunk\Apps.CodeHelper\obj\Release\Apps.CodeHelper.csprojResolveAssemblyReference.cache
+D:\ymnets.AdminSystem\trunk\Apps.CodeHelper\obj\Release\Apps.CodeHelper.CodeFrom.resources
+D:\ymnets.AdminSystem\trunk\Apps.CodeHelper\obj\Release\Apps.CodeHelper.Properties.Resources.resources
+D:\ymnets.AdminSystem\trunk\Apps.CodeHelper\obj\Release\Apps.CodeHelper.csproj.GenerateResource.Cache
+D:\ymnets.AdminSystem\trunk\Apps.CodeHelper\obj\Release\Apps.CodeHelper.exe
+D:\ymnets.AdminSystem\trunk\Apps.CodeHelper\obj\Release\Apps.CodeHelper.pdb

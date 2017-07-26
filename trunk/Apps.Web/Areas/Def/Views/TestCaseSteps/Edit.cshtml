@@ -1,0 +1,139 @@
+﻿@model Apps.Models.DEF.DEF_TestCaseStepsModel
+@using System.Globalization;
+@using Apps.Locale;
+@using Apps.Common;
+@using Apps.Web.Core;
+@{
+    ViewBag.Title = "新增";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+   
+}
+<script src="@Url.Content("~/Resources/kindeditor/kindeditor-min.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    var editor1;
+    KindEditor.ready(function (K) {
+        editor1 = K.create('#ABody', {
+            uploadJson: '/Resources/kindeditor/asp.net/upload_json.ashx',
+            fileManagerJson: '/Resources/kindeditor/asp.net/file_manager_json.ashx',
+            allowFileManager: false
+        });    });
+</script>
+<style type="text/css">
+    .top1
+    {
+        width: auto;
+    }
+    .editor-label
+    {
+        clear: both;
+        width: 65px;
+    }
+    .editor-field
+    {
+        width: auto;
+    }
+    .tri-state
+    {
+        width: 114px;
+    }
+    #ui-content
+    {
+        padding: 20px;
+    }
+</style>
+<div class="mvctool">
+    @Html.ToolButton("btnSubmit", "but-save", "保存",true)
+    @Html.ToolButton("btnReturn", "but-return", "返回",false)
+</div>
+<div id="ui-content">
+    <div id="uigrid1">
+        @using (Html.BeginForm())
+        {
+            @Html.ValidationSummary(true)
+       //一行
+            <div class="top1">
+                <div class="editor-field" style="display:none" >
+                    <input type="hidden" value="0"  />
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Code)
+                </div>
+                <div class="editor-field">
+                
+                    @Model.Code
+                    <input value="@Model.Code" id="Code" name="Code" type="hidden" />
+                    <input value="@Model.ItemID" id="ItemID" name="ItemID" type="hidden" />
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Title)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Title)
+@Html.ValidationMessageFor(model => model.Title)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.state)
+                </div>
+                <div class="editor-field">
+                    <input id="state" name="state" value="false" type="checkbox" @(Convert.ToBoolean(Model.state)?"checked='checked'":"") />
+@Html.ValidationMessageFor(model => model.state)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.sort)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.sort)
+@Html.ValidationMessageFor(model => model.sort)
+                </div>
+                 <div class="editor-label">
+                    @Html.LabelFor(model => model.TestContent)
+                </div>
+                <div class="editor-field" style="height:250px">
+                    <textarea id="ABody" cols="100" rows="8" style="width: 500px; height: 230px; visibility: hidden;">@Model.TestContent</textarea>
+                    @Html.TextAreaFor(model => model.TestContent, new { style = "display:none" })
+@Html.ValidationMessageFor(model => model.TestContent)
+                </div>
+            </div>        }
+    </div>
+</div>
+<script type="text/javascript">
+                //保存
+        $("#btnSubmit").click(function () {
+            $("#TestContent").val(editor1.html());
+            //设置修改状态
+            if ($("form").valid() == false) {
+                messageline("格式错误");
+                return false;
+            }
+            $("form").submit();
+        });
+        //返回列表
+        $("#btnReturn").click(function () {
+            //window.close();
+            var temps = "0";
+            returnParent(temps);
+        });
+        //提交
+        $("form").submit(function (form) {
+            if ($("#state").prop("checked")) { $("#state").val("true"); } else { $("#state").val("false"); }
+            $.ajax({
+                url: "/TestCaseSteps/Edit", //编辑为Edit
+                type: "Post",
+                data: $("form").serialize(),
+                dataType: "json",
+                success: function (data) {
+                    //设置修改状态
+                    $("#ItemID").prop("disabled", true);
+                    //显示信息，由信息数据结构{type:0,message:"hello world",value:"xxxxx"}
+                    messageline(data.message);
+                    try {
+                        window.opener.document.getElementById("btnRefresh2").click(); //刷新父窗口数据内容
+                        var temps = "1";
+                        returnParent(temps);
+                    } catch (err) {
+                        var temps = "0";
+                        returnParent(temps);
+                    }                }
+            });
+            return false;
+        });</script>

@@ -1,0 +1,286 @@
+﻿<#@ template language="C#" debug="false" hostspecific="true"#>
+<#@ include file="../../Apps.Models/Common.ttinclude"#><#@ 
+ output extension=".cs"#>
+ <#
+ const string usingName = "Flow";
+const string inputFile = @"../../Apps.Models/DB.edmx";
+var textTransform = DynamicTextTransformation.Create(this);
+var code = new CodeGenerationTools(this);
+var ef = new MetadataTools(this);
+var typeMapper = new TypeMapper(code, ef, textTransform.Errors);
+var	fileManager = EntityFrameworkTemplateFileManager.Create(this);
+var itemCollection = new EdmMetadataLoader(textTransform.Host, textTransform.Errors).CreateEdmItemCollection(inputFile);
+var codeStringGenerator = new CodeStringGenerator(code, typeMapper, ef);
+
+if (!typeMapper.VerifyCaseInsensitiveTypeUniqueness(typeMapper.GetAllGlobalItems(itemCollection), inputFile))
+{
+    return string.Empty;
+}
+
+WriteHeader(codeStringGenerator, fileManager);
+
+foreach (var entity in typeMapper.GetItemsToGenerate<EntityType>(itemCollection))
+{
+    if(entity.Name.StartsWith(usingName))
+        {
+            fileManager.StartNewFile("Virtual_"+entity.Name + "BLL.cs");
+			var simpleProperties = typeMapper.GetSimpleProperties(entity);
+#>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Apps.Models;
+using Apps.Common;
+using Microsoft.Practices.Unity;
+using System.Transactions;
+using Apps.BLL.Core;
+using Apps.Locale;
+using Apps.<#=usingName#>.IDAL;
+using Apps.Models<#=entity.Name.IndexOf("_")>0?"."+entity.Name.Substring(0,entity.Name.IndexOf("_")):".Sys" #>;
+namespace Apps.<#=usingName#>.BLL
+{
+	public class Virtual_<#=entity.Name #>BLL
+	{
+        [Dependency]
+        public I<#=entity.Name #>Repository m_Rep { get; set; }
+
+		public virtual List<<#=entity.Name #>Model> GetList(ref GridPager pager, string queryStr)
+        {
+
+            IQueryable<<#=entity.Name #>> queryData = null;
+            if (!string.IsNullOrWhiteSpace(queryStr))
+            {
+                queryData = m_Rep.GetList(
+				<#
+				int i =0;
+				if (simpleProperties.Any()){foreach(var edmProperty in simpleProperties){ 
+				if(i==0)
+				{
+
+				#>
+				<#=codeStringGenerator.Property(edmProperty).ToString().IndexOf("string")>0?"a=>a."+edmProperty+".Contains(queryStr)":""#>
+				<#
+				if(codeStringGenerator.Property(edmProperty).ToString().IndexOf("string")>0)
+				{
+				i=1;
+				}
+				}
+				else if(i==1)
+				{#>
+				<#=codeStringGenerator.Property(edmProperty).ToString().IndexOf("string")>0?"|| a."+edmProperty+".Contains(queryStr)":""#>
+				<#
+				}
+				
+				#>
+<#}
+
+}#>
+				);
+            }
+            else
+            {
+                queryData = m_Rep.GetList();
+            }
+            pager.totalRows = queryData.Count();
+            //排序
+            queryData = LinqHelper.SortingAndPaging(queryData, pager.sort, pager.order, pager.page, pager.rows);
+            return CreateModelList(ref queryData);
+        }
+        public virtual List<<#=entity.Name #>Model> CreateModelList(ref IQueryable<<#=entity.Name #>> queryData)
+        {
+
+            List<<#=entity.Name #>Model> modelList = (from r in queryData
+                                              select new <#=entity.Name #>Model
+                                              {
+<#
+if (simpleProperties.Any())
+{
+foreach(var edmProperty in simpleProperties)
+{
+#>
+													<#=edmProperty#> = r.<#=edmProperty#>,
+<#
+}
+}
+#>          
+                                              }).ToList();
+
+            return modelList;
+        }
+
+        public virtual bool Create(ref ValidationErrors errors, <#=entity.Name #>Model model)
+        {
+            try
+            {
+			    <#=entity.Name #> entity = m_Rep.GetById(model.<# bool oneFlag=true;if (simpleProperties.Any()){foreach(var edmProperty in simpleProperties){if(oneFlag){#><#=edmProperty#><#}oneFlag=false;}}#>);
+                if (entity != null)
+                {
+                    errors.Add(Resource.PrimaryRepeat);
+                    return false;
+                }
+                entity = new <#=entity.Name #>(); 
+<#if (simpleProperties.Any()){foreach(var edmProperty in simpleProperties){#>
+				entity.<#=edmProperty#> = model.<#=edmProperty#>;
+<#}}#>  
+
+                if (m_Rep.Create(entity))
+                {
+                    return true;
+                }
+                else
+                {
+                    errors.Add(Resource.InsertFail);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                errors.Add(ex.Message);
+                ExceptionHander.WriteException(ex);
+                return false;
+            }
+        }
+
+
+
+         public virtual bool Delete(ref ValidationErrors errors, string id)
+        {
+            try
+            {
+                if (m_Rep.Delete(id) == 1)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                errors.Add(ex.Message);
+                ExceptionHander.WriteException(ex);
+                return false;
+            }
+        }
+
+        public virtual bool Delete(ref ValidationErrors errors, string[] deleteCollection)
+        {
+            try
+            {
+                if (deleteCollection != null)
+                {
+                    using (TransactionScope transactionScope = new TransactionScope())
+                    {
+                        if (m_Rep.Delete(deleteCollection) == deleteCollection.Length)
+                        {
+                            transactionScope.Complete();
+                            return true;
+                        }
+                        else
+                        {
+                            Transaction.Current.Rollback();
+                            return false;
+                        }
+                    }
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                errors.Add(ex.Message);
+                ExceptionHander.WriteException(ex);
+                return false;
+            }
+        }
+
+		
+       
+
+        public virtual bool Edit(ref ValidationErrors errors, <#=entity.Name #>Model model)
+        {
+            try
+            {
+                <#=entity.Name #> entity = m_Rep.GetById(model.<# bool oneFlag2=true;if (simpleProperties.Any()){foreach(var edmProperty in simpleProperties){if(oneFlag2){#><#=edmProperty#><#}oneFlag2=false;}}#>);
+                if (entity == null)
+                {
+                    errors.Add(Resource.Disable);
+                    return false;
+                }
+                              <#
+if (simpleProperties.Any())
+{
+foreach(var edmProperty in simpleProperties)
+{
+#>
+				entity.<#=edmProperty#> = model.<#=edmProperty#>;
+<#
+}
+}
+#> 
+
+
+                if (m_Rep.Edit(entity))
+                {
+                    return true;
+                }
+                else
+                {
+                    errors.Add(Resource.NoDataChange);
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                errors.Add(ex.Message);
+                ExceptionHander.WriteException(ex);
+                return false;
+            }
+        }
+
+      
+
+        public virtual <#=entity.Name #>Model GetById(string id)
+        {
+            if (IsExists(id))
+            {
+                <#=entity.Name #> entity = m_Rep.GetById(id);
+                <#=entity.Name #>Model model = new <#=entity.Name #>Model();
+                              <#
+if (simpleProperties.Any())
+{
+foreach(var edmProperty in simpleProperties)
+{
+#>
+				model.<#=edmProperty#> = entity.<#=edmProperty#>;
+<#
+}
+}
+#> 
+                return model;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public virtual bool IsExists(string id)
+        {
+            return m_Rep.IsExist(id);
+        }
+		  public void Dispose()
+        { 
+            
+        }
+
+	}
+<#
+            EndNamespace(code);
+		}
+}
+
+fileManager.Process();
+
+#>

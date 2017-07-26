@@ -1,0 +1,100 @@
+﻿@model Apps.Models.Flow.Flow_FormAttrModel
+@using Apps.Common;
+@using Apps.Models.Flow;
+@using Apps.Web.Core;
+@using Apps.Models.Sys;
+@using Apps.Locale;
+@{
+    ViewBag.Title = "修改";
+    Layout = "~/Views/Shared/_Index_LayoutEdit.cshtml";
+    List<permModel> perm = null;
+}
+
+<script type="text/javascript">
+    $(function () {
+        $("#AttrType").val("@Model.AttrType");
+        $("#btnSave").click(function () {
+            if ($("form").valid()) {
+                $.ajax({
+                    url: "@Url.Action("Edit")",
+                    type: "Post",
+                    data: $("form").serialize(),
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.type == 1) {
+                            window.parent.frameReturnByMes(data.message);
+                            window.parent.frameReturnByReload(true);
+                            window.parent.frameReturnByClose()
+                        }
+                        else {
+                            window.parent.frameReturnByMes(data.message);
+                        }
+                    }
+                });
+            }
+            return false;
+        });
+        $("#btnReturn").click(function () {
+            window.parent.frameReturnByClose();
+        });
+    });
+</script>
+<div class="mvctool bgb">
+    @Html.ToolButton("btnSave", "fa fa-save", Resource.Save,ref perm, "Save", true)
+    @Html.ToolButton("btnReturn", "fa fa-reply", Resource.Reply, false)
+</div>
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(model => model.Id)
+     @Html.HiddenFor(model => model.CreateTime)
+    <table class="formtable">
+        <tbody>
+            <tr>
+                <th>
+                    @Html.LabelFor(model => model.Title)：
+                </th>
+                <td>
+                    @Html.EditorFor(model => model.Title)
+                @Html.ValidationMessageFor(model => model.Title)</td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.LabelFor(model => model.Name)：
+                </th>
+                <td>
+                    @Html.EditorFor(model => model.Name)
+                @Html.ValidationMessageFor(model => model.Name)</td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.LabelFor(model => model.AttrType)：
+                </th>
+                <td>
+                    <select id="AttrType" name="AttrType">
+                        <option value='文本'>文本</option>
+                        <option value='多行文本'>多行文本</option>
+                        <option value='日期'>日期</option>
+                        <option value='数字'>数字</option>
+                    </select>
+                @Html.ValidationMessageFor(model => model.AttrType)</td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.LabelFor(model => model.CheckJS)：
+                </th>
+                <td style="width: 310px" colspan="2">
+                    @Html.TextAreaFor(model => model.CheckJS, 10, 80, new {@style="width:500px;" })
+                </td>
+               
+            </tr>
+            <tr>
+                <th>
+                    @Html.LabelFor(model => model.TypeId)：
+                </th>
+                <td>
+                     @Html.DropDownListFor(model => model.TypeId, ViewBag.FlowType as SelectList)
+                @Html.ValidationMessageFor(model => model.TypeId)</td>
+            </tr>
+        </tbody>
+    </table>
+}

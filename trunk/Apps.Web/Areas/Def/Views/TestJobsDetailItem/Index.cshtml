@@ -1,0 +1,538 @@
+﻿@model Apps.Models.DEF.DEF_TestJobsDetailItemModel
+@using System.Globalization;
+@using Apps.Models.Sys;
+@using Apps.Common;
+@using Apps.Web.Core;
+@using Apps.Locale;
+@{
+    ViewBag.Title = "测试项目";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+    List<permModel> perm = (List<permModel>)ViewBag.perm;
+    if (perm == null)
+    {
+        perm = new List<permModel>();
+    }
+   
+}
+<script src="@Url.Content("~/Scripts/def_tools.js")" type="text/javascript"></script>
+<div class="mvctool">
+    <input id="txtQuery" type="text" class="searchText" />
+    @*操作*@
+    @Html.ToolButton("btnQuery", "fa fa-search", Resource.Query,ref perm, "Query", true)
+    @Html.ToolButton("btnCreateTestCase", "fa fa-plus", "新增测试用例", true)
+    @Html.ToolButton("btnCreateTestSteps", "fa fa-plus", "新增测试步骤",ref perm, "Create", false)
+    @Html.ToolButton("btnSetDevMember", "fa fa-cog", "设置开发负责人", true)
+    @Html.ToolButton("btnSetTestMember", "fa fa-cog", "设置测试负责人", false)
+    @Html.ToolButton("btnAllSet", "fa fa-cog", "设置步骤人员及时间", true)
+</div>
+@Html.Partial("~/Views/Shared/_DEF_ComboGrid.cshtml")
+
+<table>
+    <tr>
+        <td style="vertical-align: top">
+            <table id="List">
+            </table>
+
+            <div class="gray pt5">
+                用例说明：
+            </div>
+            <div id="Description" style="width: 400px; height: 100px; border: 1px #ccc solid; margin-top: 5px; padding: 5px; overflow: auto">
+                点击行可以查看用例的说明！
+            </div>
+
+        </td>
+        <td style="width: 5px;">&nbsp;</td>
+        <td style="vertical-align: top">
+            <table id="stepsList">
+            </table>
+            <div class="gray pt5">
+                步骤说明：
+            </div>
+            <div id="DescriptionC" style="width: 400px; height: 100px; border: 1px #ccc solid; margin-top: 5px; padding: 5px; overflow: auto">
+                点击行可以查看步骤的说明！
+            </div>
+
+        </td>
+    </tr>
+</table>
+
+<div id="modalwindow">
+</div>
+<!--测试项目-->
+<script type="text/javascript">
+    //导航表格
+    var rowNav = new RowNav("#stepsList");
+
+    //删除
+    function Delete(id) {
+        if (!confirm("要删除测试项目")) {
+            return;
+        }
+        var rowData = jQuery("#List").jqGrid('getRowData', id);
+        var vercode = rowData.VerCode;
+        var code = rowData.Code;
+        $.ajax({
+            url: "/Def/TestJobsDetailItem/Delete",
+            type: "Post",
+            data: { vercode: vercode, code: code },
+            dataType: "json",
+            success: function (data) {
+                //刷新
+                jQuery("#List").trigger("reloadGrid");
+                $.messageBox5s('@Resource.Tip', data.message);
+            }
+        });
+    };    //修改
+    function Edit(id) {
+        var rowData = jQuery("#List").jqGrid('getRowData', id);
+        editor1.html(rowData.Description);
+        jQuery("#List").jqGrid('editRow', id);
+    };
+    //详细
+    function Save(id) {
+        var des = editor1.html();
+        if (des.length > 2000) {
+            $.messageBox5s('@Resource.Tip', '测试内容总字数超过最大值2000个字,如果有图片请用图片上传不要粘贴图片');
+            return;
+        }
+        var rowData = jQuery("#List").jqGrid('getRowData', id); jQuery("#List").jqGrid('saveRow', id, function (data) {
+            //var jsMessage = new JsonMessage(data);
+            $.messageBox5s('@Resource.Tip', '保存成功');
+            return true;
+        });
+        jgAst.ShowInfoDialog();
+    };
+    $(function () {
+        //查询
+        $("#btnQuery").click(function () {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messagebox("测试任务无效!");
+                return;
+            }
+
+            var queryStr = $("#txtQuery").val();
+            if (queryStr == null) {
+                queryStr = "%";
+            }
+            $("#List").datagrid("load", { queryStr: queryStr, vercode: vercode });
+
+            //提交查询
+            $('#stepsList').datagrid('loadData', { total: 0, rows: [] });
+            $("#Description").html("");
+        });
+        //新增测试用例
+        $("#btnCreateTestCase").click(function () {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择测试任务!');
+                return;
+            }
+            if ($("#testflag").val() == 1) {
+                $.messageBox5s('@Resource.Tip', '已进行测试，不能新增测试用例!');
+                return;
+            }
+            $("#modalwindow").html("<iframe width='100%' height='100%' scrolling='no' frameborder='0'' src='/Def/TestJobsDetailItem/AddTestCase?vercode=" + vercode + "'></iframe>");
+            $("#modalwindow").window({ title: '@Resource.Create', width: 480, height: 400, iconCls: 'fa fa-plus' }).window('open');
+
+        });
+        //新增测试步骤
+        $("#btnCreateTestSteps").click(function () {
+            var vercode = $("#vercode").val();
+            var row = $('#List').datagrid('getSelected');
+            if (row != null) {
+                $("#modalwindow").html(' <iframe src="/Def/TestJobsDetailSteps/Create?vercode=' + vercode + '&code=' + row.Code + '" width="100%" scrolling="no" height="99%" frameborder="0"  ></iframe>');
+                $("#modalwindow").window({ height: 400, width: 480, title: "新增测试步骤", modal: true });
+            } else { $.messageBox5s('@Resource.Tip', '请在左边选择一个用例'); }
+        });
+        //查询
+        $("#btnSearch").click(function () {
+            var queryStr = $("#txtQuery").val();
+            //如果查询条件为空默认查询全部
+            if (queryStr == null) {
+                queryStr = "%";
+            }
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '测试任务无效!');
+                return;
+            }
+            //提交查询
+            queryStr = encodeURI(queryStr);
+            jQuery("#List").jqGrid('setGridParam', { url: '/Def/TestJobsDetailItem/GetList?querystr=' + queryStr + "&vercode=" + vercode, page: 1 }).trigger("reloadGrid");
+            jQuery("#stepsList").jqGrid('clearGridData');
+            editor1.html("");
+        });
+
+        $("#btnAllSet").click(function () {
+            var row = $('#stepsList').datagrid('getSelected');
+            if (row != null) {
+                $("#modalwindow").html("<div style='padding:10px;'>开始时间：<input id='SetPlanBeginTime_Time'  type='text'></div>" +
+                    "<div style='padding:10px;'>完成时间：<input id='SetPlanEndTime_Time' type='text'></div>" +
+                        "<div style='padding:10px;'>执行人员：<input id='Set_Member' type='text' disabled='disabled' value=''>" +
+                            "<input id='Set_MemberId' type='hidden' value=''><a id='Sel_Member' href='javascript:void(0)''>选择</a></div>" +
+                                "<div style='padding-left:70px;'><input id='Set_OK' type='button' value='提交'></div>");
+                $("#modalwindow").window({ height: 400, width: 480, title: "批量设置步骤人员及时间", modal: true });
+                $("#Set_OK").unbind().click(function () {
+                    $.messager.confirm('@Resource.Tip', '没有填写的被将会重设为空！确定？', function (r) {
+                        if (r) {
+                            if ($("#SetPlanBeginTime_Time").val() != "") {
+                                if (!isDate_yyyyMMdd($("#SetPlanBeginTime_Time").val())) {
+                                    $.messageBox5s('@Resource.Tip', '日期输入不正确，格式为：2012-01-01');
+                                    return;
+                                }
+                            }
+                            if ($("#SetPlanEndTime_Time").val() != "") {
+                                if (!isDate_yyyyMMdd($("#SetPlanEndTime_Time").val())) {
+                                    $.messageBox5s('@Resource.Tip', '日期输入不正确，格式为：2012-01-01');
+                                    return;
+                                }
+                            }
+                            var begintime = $("#SetPlanBeginTime_Time").val();
+                            var endtime = $("#SetPlanEndTime_Time").val();
+                            var member = $("#Set_MemberId").val();
+
+                            $.post("/def/Defect/AllSet", { "ids": "" + ids + "", "begintime": begintime, "endtime": endtime, "member": member },
+                                function (data) {
+                                    $.messageBox5s('@Resource.Tip', data.message);
+                                    $("#List").datagrid('load');
+                                }, "json");
+                            $("#modalwindow").window("close");
+                        }
+                    });
+
+                });
+                $("#Sel_Member").unbind().click(function () {
+                    $("#modalwindow").html(' <iframe src=/sysuser/lookup?owner=3" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+                    $("#modalwindow").window({ width: 480, height: 440, title: "用户", modal: true });
+                });
+            } else { $.messageBox5s('@Resource.Tip', '请选择要设置的步骤'); }
+
+        });
+
+
+        $('#List').datagrid({
+            url: '/Def/TestJobsDetailItem/GetList?vercode=@ViewBag.vercode',
+            width: 600,
+            methord: 'post',
+            height: SetGridHeightSub(220),
+            fitColumns: false,
+            sortName: 'Sort',
+            sortOrder: 'asc',
+            idField: 'Id',
+            pageSize: 15,
+            pageList: [15, 20, 30, 40, 50],
+            pagination: true,
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            //rownumbers: true,//行号
+            columns: [[
+                {
+                    field: 'opt',
+                    title: "操作",
+                    width: 50,
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        if (row.editing) {
+                            var s = '<a href="#" title="保存" class="fa fa-save" onclick="saverow1(' + index + ')"></a><a href="#" title="取消" class="fa fa-reply" onclick="cancelrow1(' + index + ')"></a> ';
+                            var c = '';
+                            return s + c;
+                        } else {
+                            var e = '<a href="#" title="修改" class="fa fa-pencil" onclick="editrow1(' + index + ')"></a> ';
+                            var d = '<a href="#" title="删除" class="fa fa-trash" onclick="delrow1(' + index + ',this)"></a>';
+                            return e + d;
+                        }
+                    }
+                },
+                { field: 'Id', title: '@Resource.TitleID', hidden: true, width: 80, sortable: true },
+                { field: 'VerCode', title: '版本号', width: 80, sortable: true, hidden: true },
+                { field: 'Code', title: '用例编码', width: 80, sortable: true },
+                { field: 'Name', title: '用例名称', width: 80, sortable: true },
+                { field: 'Description', title: '@Resource.TitleRemark', width: 80, sortable: true },
+                { field: 'Result', title: '测试结果', width: 80, sortable: true },
+                { field: 'Sort', title: '@Resource.TitleSort', width: 80, sortable: true },
+                { field: 'ExSort', title: '执行顺序', width: 80, sortable: true },
+                { field: 'Lock', title: '锁定', width: 80, sortable: true },
+                { field: 'Developer', title: '开发负责人', width: 80, sortable: true },
+                { field: 'Tester', title: '测试负责人', width: 80, sortable: true },
+                { field: 'FinDt', title: '完成时间', width: 80, sortable: true },
+                { field: 'TestRequestFlag', title: '请求测试', width: 80, sortable: true },
+                { field: 'DevFinFlag', title: '开发标记', width: 80, sortable: true }
+            ]],
+            onClickRow: function (index, data) {
+                var row = $('#List').datagrid('getSelected');
+                var vercode = $("#vercode").val();
+                $("#stepsList").datagrid("load", { vercode: vercode, code: row.Code });
+                $("#Description").html(row.Description);
+            },
+            onBeforeEdit: function (index, row) {
+                row.editing = true;
+                updateActions1(index);
+            },
+            onAfterEdit: function (index, row) {
+                row.editing = false;
+                updateActions1(index);
+            },
+            onCancelEdit: function (index, row) {
+                row.editing = false;
+                updateActions1(index);
+            }
+        });
+
+    });
+    //用户返回
+    function ReturnSelectUser(owner, val) {
+
+        var row = $('#List').datagrid('getSelected');
+        if (row == null) {
+            $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords');
+            return;
+        }
+        if (owner == 1) {
+            $.post("/def/TestJobsDetailItem/SetMember", { "id": "" + row.Id + "", "member": val, "isDev": true },
+                            function (data) {
+                                $.messageBox5s('@Resource.Tip', data.message);
+                                jQuery("#List").datagrid("load");
+                            }, "json");
+        }
+        else if (owner == 2) {
+            $.post("/def/TestJobsDetailItem/SetMember", { "id": "" + row.Id + "", "member": val, "isDev": false },
+                            function (data) {
+                                $.messageBox5s('@Resource.Tip', data.message);
+                                jQuery("#List").datagrid("load");
+                            }, "json");
+        }
+        frameReturnByClose();
+    }
+    //ifram 返回
+    function frameReturnByClose() {
+        $("#modalwindow").window('close');
+    }
+    $(function () {
+        $("#btnSetDevMember").click(function () {
+            var row = $('#List').datagrid('getSelected');
+            if (row == null) {
+                $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords');
+                return;
+            }
+
+            $("#modalwindow").html(' <iframe src="/sysuser/lookup?owner=1" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+            $("#modalwindow").window({ title: '设置开发人员', width: 420, height: 400, iconCls: 'fa fa-plus' }).window('open');
+        });
+        $("#btnSetTestMember").click(function () {
+            var row = $('#List').datagrid('getSelected');
+            if (row == null) {
+                $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords');
+                    return;
+                }
+
+            $("#modalwindow").html(' <iframe src="/sysuser/lookup?owner=2" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+            $("#modalwindow").window({ title: '设测试人员', width: 420, height: 400, iconCls: 'fa fa-plus' }).window('open');
+            });
+
+        $('#stepsList').datagrid({
+            url: '/Def/TestJobsDetailSteps/GetListNoAction',
+            width: SetGridWidthSub(615),
+            methord: 'post',
+            height: SetGridHeightSub(220),
+            fitColumns: false,
+            sortName: 'Sort',
+            sortOrder: 'asc',
+            idField: 'Id',
+            pageSize: 15,
+            pageList: [15, 20, 30, 40, 50],
+            pagination: true,
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            //rownumbers: true,//行号
+            columns: [[
+                {
+                    field: 'opt',
+                    title: "操作",
+                    width: 50,
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        if (row.editing) {
+                            var s = '<a href="#" title="保存" class="fa fa-save" onclick="saverow(' + index + ')"></a><a href="#" title="取消" class="fa fa-reply" onclick="cancelrow(' + index + ')"></a> ';
+                            var c = '';
+                            return s + c;
+                        } else {
+                            var e = '<a href="#" title="修改" class="fa fa-pencil" onclick="editrow(' + index + ')"></a> ';
+                            var d = '<a href="#" title="删除" class="fa fa-trash" onclick="delrow(' + index + ',this)"></a>';
+                            return e + d;
+                        }
+                    }
+                },
+                 { field: 'Id', title: '@Resource.TitleID', width: 80, sortable: true, hidden: true },
+                { field: 'ItemID', title: '项目ID', width: 80, sortable: true, hidden: true },
+                { field: 'VerCode', title: '版本号', width: 80, sortable: true, hidden: true },
+                { field: 'Code', title: '用例编码', width: 80, sortable: true, hidden: true },
+                { field: 'Title', title: '测试步骤', width: 80, sortable: true, editor: 'text' },
+                { field: 'TestContent', title: '测试内容', width: 80, sortable: true, hidden: true },
+                { field: 'Result', title: '测试结果', width: 80, sortable: true },
+                { field: 'Sort', title: '@Resource.TitleSort', width: 80, sortable: true, editor: 'numberbox' },
+                { field: 'Developer', title: '开发人', width: 80, sortable: true },
+                { field: 'PlanStartDt', title: '计划开始', width: 80, sortable: true },
+                { field: 'PlanEndDt', title: '计划结束', width: 80, sortable: true }
+            ]],
+            onClickRow: function (index, data) {
+                var row = $('#stepsList').datagrid('getSelected');
+                $("#DescriptionC").html(row.TestContent);
+            },
+            onBeforeEdit: function (index, row) {
+                row.editing = true;
+                updateActions(index);
+            },
+            onAfterEdit: function (index, row) {
+                row.editing = false;
+                updateActions(index);
+            },
+            onCancelEdit: function (index, row) {
+                row.editing = false;
+                updateActions(index);
+            }
+        });
+
+        $(window).resize(function () {
+            $('#List').datagrid('resize', {
+                height: SetGridHeightSub(220),
+            });
+            $('#stepsList').datagrid('resize', {
+                height: SetGridHeightSub(220),
+                width: SetGridWidthSub(615),
+            });
+        });
+    });
+
+        //更新按钮状态
+        function updateActions1(index) {
+            $('#List').datagrid('updateRow', {
+                index: index,
+                row: { action: '' }
+            });
+        }
+        //保存数据
+        function saverow1(index) {;
+            var testContent = $("#Description").val();
+            if (testContent > 8000) {
+                $.messagebox("测试内容总字数超过最大值8000个字,如果有图片请用图片上传不要粘贴图片");
+                return;
+            }
+            $('#List').datagrid('selectRow', index);//先选中
+            var row = $('#List').datagrid('getSelected');//获取选中
+            $('#List').datagrid('endEdit', index);//结束编辑
+            //保存数据到后台
+            $.ajax({
+                url: "/Def/TestJobsDetailSteps/Edit",
+                type: "Post",
+                data: { ItemId: row.ItemID, VerCode: row.VerCode, Code: row.Code, TestContent: testContent },
+                dataType: "json",
+                success: function (data) {
+                    if (data.type == 0) {
+                        $('#stepsList').datagrid('rejectChanges');//修改失败撤销修改
+                    }
+                    $.messageBox5s('@Resource.Tip', data.message);
+                }
+            });
+            cancelrow(index);//保存后返回操作
+
+        }
+        //开始编辑
+        function editrow1(index) {
+            $('#List').datagrid('selectRow', index).datagrid('beginEdit', index);
+        }
+        //取消编辑
+        function cancelrow1(index) {
+            $('#List').datagrid('cancelEdit', index);
+        }
+        function delrow1(index) {
+            $('#List').datagrid('selectRow', index);
+            var row = $('#List').datagrid('getSelected');
+            if (row != null) {
+                $.messager.confirm('@Resource.Tip', '要删除用例关系明细?', function (r) {
+                    if (r) {
+                        $.ajax({
+                            url: "/Def/TestJobsDetailItem/Delete",
+                            type: "Post",
+                            data: { id: row.ItemId }, //{a:aValue,b:bValue}
+                            dataType: "json",
+                            success: function (data) {
+                                var row = $('#caseList').datagrid('getSelected');
+                                $("#stepsList").datagrid("load", { code: row.Code });
+                                $.messageBox5s('@Resource.Tip', data.message);
+                            }
+                        });
+                    }
+                });
+            } else { $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords'); }
+        }
+
+
+        //更新按钮状态
+        function updateActions(index) {
+            $('#stepsList').datagrid('updateRow', {
+                index: index,
+                row: { action: '' }
+            });
+        }
+        //保存数据
+        function saverow(index) {;
+            var testContent = $("#DescriptionC").val();
+            if (testContent > 8000) {
+                $.messagebox("测试内容总字数超过最大值8000个字,如果有图片请用图片上传不要粘贴图片");
+                return;
+            }
+            $('#stepsList').datagrid('selectRow', index);//先选中
+            var row = $('#stepsList').datagrid('getSelected');//获取选中
+            $('#stepsList').datagrid('endEdit', index);//结束编辑
+            //保存数据到后台
+            $.ajax({
+                url: "/Def/TestJobsDetailItem/Edit",
+                type: "Post",
+                data: { ItemId: row.ItemID, VerCode: row.VerCode, Code: row.Code, TestContent: testContent },
+                dataType: "json",
+                success: function (data) {
+                    if (data.type == 0) {
+                        $('#stepsList').datagrid('rejectChanges');//修改失败撤销修改
+                    }
+                    $.messageBox5s('@Resource.Tip', data.message);
+                }
+            });
+            cancelrow(index);//保存后返回操作
+
+        }
+        //开始编辑
+        function editrow(index) {
+            $('#stepsList').datagrid('selectRow', index).datagrid('beginEdit', index);
+        }
+        //取消编辑
+        function cancelrow(index) {
+            $('#stepsList').datagrid('cancelEdit', index);
+        }
+        function delrow(index) {
+            $('#stepsList').datagrid('selectRow', index);
+            var row = $('#stepsList').datagrid('getSelected');
+            if (row != null) {
+                $.messager.confirm('@Resource.Tip', '要删除所选步骤?', function (r) {
+                    if (r) {
+                        $.ajax({
+                            url: "/Def/TestJobsDetailSteps/Delete",
+                            type: "Post",
+                            data: { itemid: row.ItemID, vercode: row.VerCode, code: row.Code }, //{a:aValue,b:bValue}
+                            dataType: "json",
+                            success: function (data) {
+                                $("#stepsList").datagrid("load");
+                                $.messageBox5s('@Resource.Tip', data.message);
+                            }
+                        });
+                    }
+                });
+            } else { $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords'); }
+    }
+    function ReloadList(vercode) {
+        $("#List").datagrid("load", { vercode: vercode });
+    }
+    function ReloadStepsList(vercode, code) {
+        $("#stepsList").datagrid("load", { vercode: vercode, code: code });
+    }
+</script>

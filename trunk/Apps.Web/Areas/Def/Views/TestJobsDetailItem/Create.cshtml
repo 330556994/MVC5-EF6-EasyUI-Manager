@@ -1,0 +1,185 @@
+﻿@model Apps.Models.DEF.DEF_TestJobsDetailItemModel
+@using System.Globalization;
+@using Apps.Locale;
+@using Apps.Common;
+@using Apps.Web.Core;
+@{
+    ViewBag.Title = "新增";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+
+}
+<div class="mvctool">
+    @Html.ToolButton("btnSubmit", "fa fa-plus", Resource.Create, true)
+    @Html.ToolButton("btnReturn", "fa fa-reply", Resource.Reply, false)
+</div>
+<div id="ui-content">
+    <div id="uigrid1">
+        @using (Html.BeginForm())
+        {
+            @Html.ValidationSummary(true)
+            //一行
+            <div class="top1">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.VerCode)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.VerCode)
+                    @Html.ValidationMessageFor(model => model.VerCode)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Code)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Code)
+                    @Html.ValidationMessageFor(model => model.Code)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Name)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Name)
+                    @Html.ValidationMessageFor(model => model.Name)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Description)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Description)
+                    @Html.ValidationMessageFor(model => model.Description)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Result)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Result)
+                    @Html.ValidationMessageFor(model => model.Result)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Sort)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Sort)
+                    @Html.ValidationMessageFor(model => model.Sort)
+                </div>
+            </div>
+            //二行
+            <div class="top2">
+            </div>
+            //三行
+            <div class="top3">
+            </div>
+            //隐藏字段
+            @Html.HiddenFor(model => model.VerCode)
+            @Html.HiddenFor(model => model.Code)
+            @Html.HiddenFor(model => model.Name)
+            @Html.HiddenFor(model => model.Description)
+            @Html.HiddenFor(model => model.Result)
+            @Html.HiddenFor(model => model.Sort)
+            //提示信息
+            <div id="message" style="color: #F00;">
+                @Html.ValidationMessageFor(model => model.VerCode)
+                @Html.ValidationMessageFor(model => model.Code)
+                @Html.ValidationMessageFor(model => model.Name)
+                @Html.ValidationMessageFor(model => model.Description)
+                @Html.ValidationMessageFor(model => model.Result)
+                @Html.ValidationMessageFor(model => model.Sort)
+            </div>
+        }
+    </div>
+</div>
+<script type="text/javascript">
+    //
+    //检查关键字是否已存在
+    $("#VerCode").keyup(function (event) {
+        if (event.keyCode == '13') {
+            var vercode = $("#VerCode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '测试任务不能为空!');
+                return;
+            }
+            $.get(".Name/YP/Sample/Checkvercode", { "vercode": vercode },
+                function (data) {
+                    if (data == 1) {
+                        $.messageBox5s('@Resource.Tip', '测试任务已存在请重新录入!');
+                        return;
+                    }
+                    // $("#XXX").focus();
+                }, "json");
+        }
+    });
+
+
+    //设置不能修改字段
+    $("#VerCode").prop("disabled", true);
+    //绑定回车Event    setFocusChainTriggerEvent("#", "#VerCode", "#sle_");
+    $(function () {
+        //初始化
+        function initPage() {
+            //初始化字段
+            //设置选择窗口
+            $("#sle_VerCode").click(function () {
+                showLookUp('VerCode', 'VerCode', '/Base/ba_VerCode', '600', '430');
+            });
+            $("#sle_Code").click(function () {
+                showLookUp('Code', 'Code', '/Base/ba_Code', '600', '430');
+            });
+            $("#sle_Name").click(function () {
+                showLookUp('Name', 'Name', '/Base/ba_Name', '600', '430');
+            });
+            $("#sle_Description").click(function () {
+                showLookUp('Description', 'Description', '/Base/ba_Description', '600', '430');
+            });
+            $("#sle_Result").click(function () {
+                showLookUp('Result', 'Result', '/Base/ba_Result', '600', '430');
+            });
+            $("#sle_Sort").click(function () {
+                showLookUp('Sort', 'Sort', '/Base/ba_Sort', '600', '430');
+            });
+            ////日历            $("#RequestDate").datepicker({ altFormat: 'yy-mm-dd', constrainInput: false, dateFormat: 'yy-mm-dd' });
+            $("#RequestDate").click(function () {
+                $("#ui-datepicker-div").css("left", 360);
+            });
+            ////////////////////////////////////////////////////////////////////////
+            //初始焦点
+            $("#VerCode").focus();
+        }; initPage();
+        //form验证
+        jQuery("form").validate();
+        //保存
+        $("#btnSubmit").click(function () {
+            //设置修改状态
+            $("#VerCode").prop("disabled", false);
+            if ($("form").valid() == false) {
+                $.messageBox5s('@Resource.Tip', '参数有错误!');
+                return false;
+            }
+            $("form").submit();
+        });
+        //返回列表
+        $("#btnReturn").click(function () {
+            //window.close();
+            var temps = "0";
+            returnParent(temps);
+        });
+        //提交
+        $("form").submit(function (form) {
+            if (form.result) {
+                $.ajax({
+                    url: "/TestJobsDetailItem/Create", //编辑为Edit
+                    type: "Post",
+                    data: $("form").serialize(),
+                    dataType: "json",
+                    success: function (data) {
+                        //设置修改状态
+                        $("#VerCode").prop("disabled", true);
+                        //显示信息，由信息数据结构{type:0,message:"hello world",value:"xxxxx"}
+                        $.messageBox5s('@Resource.Tip', data.message);
+                        window.opener.document.getElementById("btnRefresh").click(); //刷新父窗口数据内容                        } catch (err) {                        }
+                    }
+                });
+            }
+            return false;
+        });
+    });
+
+</script>

@@ -1,0 +1,17 @@
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\bin\Debug\Apps.CodeHelper.exe.config
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\bin\Debug\Apps.CodeHelper.exe
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\bin\Debug\Apps.CodeHelper.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\obj\Debug\Apps.CodeHelper.csprojResolveAssemblyReference.cache
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\obj\Debug\Apps.CodeHelper.CodeFrom.resources
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\obj\Debug\Apps.CodeHelper.Properties.Resources.resources
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\obj\Debug\Apps.CodeHelper.csproj.GenerateResource.Cache
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\obj\Debug\Apps.CodeHelper.exe
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\obj\Debug\Apps.CodeHelper.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\bin\Debug\Apps.CodeHelper.exe.config
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\bin\Debug\Apps.CodeHelper.exe
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\bin\Debug\Apps.CodeHelper.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\obj\Debug\Apps.CodeHelper.CodeFrom.resources
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\obj\Debug\Apps.CodeHelper.Properties.Resources.resources
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\obj\Debug\Apps.CodeHelper.csproj.GenerateResource.Cache
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\obj\Debug\Apps.CodeHelper.exe
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.CodeHelper\obj\Debug\Apps.CodeHelper.pdb

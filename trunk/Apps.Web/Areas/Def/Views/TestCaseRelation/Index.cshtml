@@ -1,0 +1,119 @@
+﻿@model Apps.Models.DEF.DEF_TestCaseRelationModel
+@using System.Globalization;
+@using Apps.Locale;
+@using Apps.Models.Sys;
+@using Apps.Common;
+@using Apps.Web.Core;
+@{
+    ViewBag.Title = "用例关系";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+    List<permModel> perm = (List<permModel>)ViewBag.perm;
+    if (perm == null)
+    {
+        perm = new List<permModel>();
+    }
+   
+}<input id="txtQuery" type="text" class="searchText"/>
+@*操作*@
+@Html.ToolButton("btnQuery", "fa fa-search",Resource.Query,ref perm,"Query",true)
+@Html.ToolButton("btnRefresh", "fa fa-refresh", Resource.Refresh, true)
+@Html.ToolButton("btnCreateRelation", "fa fa-plus", "新增",ref perm, "Create", true)
+<div class="top1">
+    <table id="RelationList">
+    </table>
+    <div id="RelationListPager">
+    </div>
+</div>
+<script type="text/javascript">
+    //删除
+    function DeleteRalation(id) {
+        $.messager.confirm('@Resource.Tip', '要删除用例关系明细?', function (r) {
+            if (r) {
+                $.ajax({
+                    url: "/Def/TestCaseRelation/Delete",
+                    type: "Post",
+                    data: { id: id }, //{a:aValue,b:bValue}
+                    dataType: "json",
+                    success: function (data) {
+                        //刷新
+                        jQuery("#RelationList").trigger("reloadGrid");
+                        $.messageBox5s('@Resource.Tip',data.message);
+                    }
+                });
+            }
+        });
+    };    //修改
+    function EditRalation(id) {        
+    var value = 1;
+        var returnResult = showModalDialog(".Name/Def/TestCaseRelation/Edit?pcode=" + pcode, [value], "dialogLeft:200px;dialogTop:200px;dialogwidth:630px; dialogheight:270px;");
+        if (returnResult == 1) {
+            //刷新数据
+            jQuery("#RelationList").trigger("reloadGrid");
+        }
+    };
+    //详细
+    function DetailsRalation(id) {        
+        var value = 1;
+        var returnResult = showModalDialog(".Name/Def/TestCaseRelation/Details?pcode=" + pcode, [value], "dialogLeft:200px;dialogTop:200px;dialogwidth:630px; dialogheight:270px;");    };    $(function () {
+        //新增
+        $("#btnCreateRelation").click(function () {
+            var value = 1;
+            var returnResult = showModalDialog(".Name/Def/TestCaseRelation/Create", [value], "dialogLeft:300px;dialogTop:250px;dialogwidth:250px; dialogheight:250px;");            //刷新数据
+            jQuery("#RelationList").trigger("reloadGrid");        });
+        //返回列表
+        $("#btnReturn").click(function () {
+            //window.close();
+            var temps = "0";
+            returnParent(temps);
+        });
+        //查询
+        $("#btnSearch").click(function () {
+            var queryStr = $("#txtQuery").val();
+            //如果查询条件为空默认查询全部
+            if (queryStr == null) {
+                queryStr = "%";
+            }
+            
+            //提交查询
+            queryStr = encodeURI(queryStr);
+            jQuery("#RelationList").jqGrid('setGridParam', { url: '/Def/TestCaseRelation/GetList?querystr=' + queryStr, page: 1 }).trigger("reloadGrid");
+            
+        });
+        //刷新
+        $("#btnRefresh").click(function () {
+            jQuery("#RelationList").jqGrid('setGridParam', { url: "/Def/TestCaseRelation/GetList?pcode=@ViewBag.pcode", page: 1 }).trigger("reloadGrid");
+        });
+        jQuery("#RelationList").jqGrid({
+            url: '/Def/TestCaseRelation/GetList',
+            datatype: "json",
+            colNames: ['链接', 'ID', '操作', '主用例编码', '子用例编码'],
+            colModel: [
+                    { name: 'Linker', width: 90, frozen: true }, //链接
+                    {name: 'ID', width: 15, key: true, hidden: true, frozen: true }, //ID
+                    {name: 'Action', width: 60 }, //操作
+					{name: 'PCode', width: 60 },
+					{ name: 'CCode', width: 60 },
+					                    ],            
+             rowNum: 1000,
+            //rowList: [15, 25, 35],
+            pager: '#RelationListPager',
+            sortname: 'ID',
+            viewrecords: true,
+            sortorder: "desc",
+            mtype: 'POST',
+            height: 'auto',
+            autowidth: true,
+            shrinkToFit: false,
+            multiselect: false,
+            loadComplete: function () {
+                $("#gview_List th").css("text-align", "left");
+                $("#gview_List td").css("text-overflow", "ellipsis");            
+                }
+        });
+        $(window).resize(function () {
+            $("#RelationList").setGridWidth( SetGridWidthSub(10));
+            $("#RelationList").setGridHeight($(window).height() - 80);
+        });
+        $("#RelationList").setGridWidth( SetGridWidthSub(10));
+        $("#RelationList").setGridHeight($(window).height() - 80);    });
+</script>

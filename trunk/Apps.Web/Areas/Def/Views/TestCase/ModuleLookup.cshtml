@@ -1,0 +1,72 @@
+﻿@model Apps.Models.DEF.DEF_TestCaseModel
+@using System.Globalization;
+@using Apps.Locale;
+@using Apps.Models.Sys;
+@using Apps.Common;
+@using Apps.Web.Core;
+@{
+    ViewBag.Title = "用例分类";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+    List<permModel> perm = (List<permModel>)ViewBag.perm;
+    if (perm == null)
+    {
+        perm = new List<permModel>();
+    }
+   
+}
+<script src="@Url.Content("~/Scripts/def_tools.js")" type="text/javascript"></script>    
+<div class="mvctool">
+        @Html.ToolButton("btnSelect", "fa fa-arrow-right", "选择", true)        
+        @Html.ToolButton("btnReturn", "fa fa-reply", Resource.Reply, false)
+    </div>
+    <table id="moduleList">
+    </table>
+    <div id="moduleListPager">
+    </div><!--测试用例-->
+<script type="text/javascript">    $(function () {
+       
+        //返回列表
+        $("#btnReturn").click(function () {
+            window.parent.ReturnCloseDialog();
+        });
+        //返回列表
+        $("#btnSelect").click(function () {
+            var id = jQuery("#moduleList").jqGrid("getGridParam", "selrow");
+            //alert(id);
+            if (id == null || id == "") {
+               $.messageBox5s('@Resource.Tip','@Resource.PlaseChooseToOperatingRecords');
+                return;
+            }
+            if (id == "0") {
+                 $.messageBox5s('@Resource.Tip', '请选择一个具体的用例类型');
+                return;
+            }
+            var rowData = jQuery("#moduleList").jqGrid("getRowData", id);
+            if (rowData != null) {
+                window.parent.ReturnValue(rowData.id, rowData.name);            }
+            window.parent.ReturnCloseDialog();
+        });
+        //系统表格
+        jQuery("#moduleList").jqGrid({
+            treeGrid: true,
+            treeGridModel: 'adjacency',
+            ExpandColumn: 'name',
+            url: '/Def/TestCase/GetPerantModuleNoAll',
+            datatype: "json",
+            mtype: "POST",
+            colNames: ["ID", "用例分类导航", "操作"],
+            colModel: [
+         { name: 'id', index: 'id', width: 1, hidden: true, key: true },
+         { name: 'name', index: 'name', width: 250 },
+         { name: 'act', width: 30, hidden: true },
+    ],
+            height: 250,
+            width: 230,
+            ExpandColClick: true,
+            gridComplete: function () {            },
+            loadComplete: function () {
+                //jQuery(this).jqGrid('addRowData', "_undefined", { id: "_undefined", name: "  *未定义*  " });
+            }
+        });
+    });
+</script>

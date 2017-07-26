@@ -1,0 +1,97 @@
+﻿@model Apps.Models.DEF.DEF_TestJobsModel
+@using System.Globalization;
+@using Apps.Locale;
+@using Apps.Common;
+@using Apps.Web.Core;
+@{
+    ViewBag.Title = "新增";
+    Layout = "~/Views/Shared/_Index_LayoutEdit.cshtml";
+   
+}
+<script src="@Url.Content("~/Resources/kindeditor/kindeditor-min.js")" type="text/javascript"></script><div class="mvctool">
+    @Html.ToolButton("btnSave", "fa fa-save", Resource.Save, true)
+</div>
+@using (Html.BeginForm("Create", "TestCaseSteps", null, FormMethod.Post, new { Id = "CreateForm" }))
+{
+    @Html.ValidationSummary(true)
+    <table class="formtable">
+        <tbody>
+            <tr>
+                <th>
+                    @Html.LabelFor(model => model.VerCode)：
+               </th>
+                <td style="width: 110px">
+                    @Html.EditorFor(model => model.VerCode)
+@Html.ValidationMessageFor(model => model.VerCode)
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.LabelFor(model => model.Name)：
+                </td>
+                <td style="width: 110px">
+                     @Html.EditorFor(model => model.Name)
+@Html.ValidationMessageFor(model => model.Name)
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.LabelFor(model => model.Description)：
+                </td>
+                <td >
+                    <textarea id="Body" cols="100" rows="8" style="width: 410px; height: 190px; visibility: hidden;"></textarea>
+                    @Html.HiddenFor(model => model.Description)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    @Html.HiddenFor(model => model.Result)
+    @Html.HiddenFor(model => model.Creator)
+    @Html.HiddenFor(model => model.CrtDt)
+    @Html.HiddenFor(model => model.CloseState)
+    @Html.HiddenFor(model => model.Closer)
+    @Html.HiddenFor(model => model.CloseDt)
+    @Html.HiddenFor(model => model.Description)
+}
+<script type="text/javascript">
+    var editor1;
+    KindEditor.ready(function (K) {
+        editor1 = K.create('#Body', {
+            uploadJson: '/Resources/kindeditor/asp.net/upload_json.ashx',
+            fileManagerJson: '/Resources/kindeditor/asp.net/file_manager_json.ashx',
+            allowFileManager: false,
+            newlineTag: 'br',
+            items: ['undo', 'redo', '|', 'bold', 'italic', 'underline', 'image', 'fontname', 'fontsize', 'forecolor', 'hilitecolor', 'link', 'unlink', 'fullscreen', 'insertfile']
+        });
+    });
+    $(function () {
+        $("#Body").html($("#Description").val());
+        $("#btnSave").click(function () {
+            //设置修改状态
+            $("#Description").val(editor1.html());
+            if ($("#Description").val().length > 2000) {
+                 $.messageBox5s('@Resource.Tip', '测试内容总字数超过最大值2000个字,如果有图片请用图片上传不要粘贴图片');
+                return;
+            }
+            if ($("#CreateForm").valid()) {
+                $.ajax({
+                    url: "/DEF/TestJobs/Edit",
+                    type: "Post",
+                    data: $("#CreateForm").serialize(),
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.type == 1) {
+                            $.messageBox5s('@Resource.Tip',data.message);
+                            window.parent.ReturnCreate();
+                            window.parent.ReturnCloseDialog();
+                        }
+                        else {
+                             $.messageBox5s('@Resource.Tip', data.message);
+                        }
+                    }
+                });
+            }
+            return false;
+        });
+    });
+</script>

@@ -1,0 +1,146 @@
+﻿@model Apps.Models.DEF.DEF_TestJobsDetailModel
+@using System.Globalization;
+@using Apps.Common;
+@using Apps.Web.Core;
+@using Apps.Locale;
+@{
+    ViewBag.Title = "编辑";
+    Layout = "~/Views/Shared/_Index_LayoutEdit.cshtml";
+   
+}
+<script src="@Url.Content("~/Resources/kindeditor/kindeditor-min.js")" type="text/javascript"></script>
+<style type="text/css">
+    #ui-content
+    {
+        padding: 10px;
+    }
+    .container
+    {
+        width: 400px;
+    }
+</style><div class="mvctool">
+@Html.ToolButton("btnSubmit", "but-edit", "编辑",true)
+@Html.ToolButton("btnReturn", "but-return", "返回",false)
+</div><div id="ui-content">
+    <div id="uigrid1">
+        @using (Html.BeginForm())
+        {
+            @Html.ValidationSummary(true)
+       //一行
+            <div class="container">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.VerCode)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.VerCode)
+@Html.ValidationMessageFor(model => model.VerCode)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Code)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Code)
+@Html.ValidationMessageFor(model => model.Code)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Name)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Name)
+@Html.ValidationMessageFor(model => model.Name)
+                </div>
+               
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Sort)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Sort)
+@Html.ValidationMessageFor(model => model.Sort)
+@Html.ValidationMessageFor(model => model.Description)
+                </div>
+                 <div class="editor-label">
+                    @Html.LabelFor(model => model.Description)
+                </div>
+                <div class="editor-field">
+                    <textarea id="ABody" cols="100" rows="8" style="width: 580px; height: 230px; visibility: hidden;"></textarea>
+                </div>
+            </div>               //隐藏字段            @Html.HiddenFor(model => model.Result)
+            @Html.HiddenFor(model => model.Description)        }
+    </div>
+</div>
+<script type="text/javascript">
+    var editor1;
+    KindEditor.ready(function (K) {
+        editor1 = K.create('#ABody', {            uploadJson: '/Resources/kindeditor/asp.net/upload_json.ashx',
+            fileManagerJson: '/Resources/kindeditor/asp.net/file_manager_json.ashx',
+            allowFileManager: false
+        });    });
+   
+    $(function () {        
+    //初始化
+        function initPage() {            
+        //初始化字段
+            //设置不能修改字段
+            $("#VerCode").prop("disabled", true);
+            $("#Code").prop("disabled", true);
+            $("#Name").prop("disabled", true);
+            ////////////////////////////////////////////////////////////////////////
+            //初始焦点
+            $("#Description").focus();            
+            $("#ABody").html($("#Description").val());
+        };       
+         initPage();
+        //form验证
+        jQuery("form").validate();
+        //保存
+        $("#btnSubmit").click(function () {
+            //设置修改状态
+            $("#VerCode").prop("disabled", false);
+            $("#Code").prop("disabled", false);
+            $("#Name").prop("disabled", false);            
+            $("#Description").val(editor1.html());
+            if ($("#Description").val().length > 2000) {
+                  $.messageBox5s('@Resource.Tip', '测试内容总字数超过最大值2000个字,如果有图片请用图片上传不要粘贴图片');
+                return;
+            }
+            if ($("form").valid() == false) {
+                 $.messageBox5s('@Resource.Tip', '上传参数有误');
+                return false;
+            }
+            $("form").submit();
+        });
+        //返回列表
+        $("#btnReturn").click(function () {
+            //window.close();
+            var temps = "1";
+            returnParent(temps);
+        });
+        //提交
+        $("form").submit(function (form) {
+            if (form.result) {
+                $.ajax({
+                    url: "/TestJobsDetail/Edit", //编辑为Edit
+                    type: "Post",
+                    data: $("form").serialize(),
+                    dataType: "json",
+                    success: function (data) {
+                        //设置修改状态
+                        $("#VerCode").prop("disabled", true);
+                        $("#Code").prop("disabled", true);
+                        $("#Name").prop("disabled", true);
+                        //显示信息，由信息数据结构{type:0,message:"hello world",value:"xxxxx"}
+                         $.messageBox5s('@Resource.Tip',data.message);
+                        try {
+                            //ie会出错,加入异常处理
+                            window.opener.document.getElementById("btnRefresh").click();
+                            //刷新父窗口数据内容                        
+                       } catch (err) {                        }
+                    }
+                });
+            }
+            var temps = "1";
+            returnParent(temps);
+        });    
+        });
+   
+</script>

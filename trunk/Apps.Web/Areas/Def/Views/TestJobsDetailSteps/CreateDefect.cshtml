@@ -1,0 +1,181 @@
+﻿@model Apps.Models.DEF.DEF_TestJobsDetailStepsModel
+@using System.Globalization;
+@using Apps.Common;
+@using Apps.Web.Core;
+@using Apps.Locale;
+@{
+    ViewBag.Title = "新增缺陷";
+    Layout = "~/Views/Shared/_Index_LayoutEdit.cshtml";
+   
+}
+<script src="@Url.Content("~/Scripts/kindeditor/kindeditor-min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/def_tools.js")" type="text/javascript"></script>
+ <div style="padding:4px 5px 0px 5px;">
+<table style="width: 100%; height: 400px;">
+    <tbody>
+        <tr>
+            <td style="width: 150px; vertical-align:top">
+                <table id="ItemList">
+                </table>
+            </td>
+            <td>
+                <div class="mvctool" style="margin-left:10px;">
+                    @Html.ToolButton("btnSave", "fa fa-save", Resource.Save, true)
+                    @Html.ToolButton("btnReturn", "fa fa-reply", Resource.Reply, false)
+                </div>
+               @using (Html.BeginForm())
+                {
+                    @Html.ValidationSummary(true)
+                    <table class="formtable">
+                        <tbody>
+                            <tr>
+                                <th>
+                                   步骤名称：
+                              </th>
+                                <td style="width: 110px">
+                                    @Html.EditorFor(model => model.Title)
+                                </td>
+                                <td>
+                @Html.ValidationMessageFor(model => model.Title)
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                   排序：  
+                              </th>
+                                <td style="width: 110px">
+                                    @Html.TextBoxFor(model => model.Sort, new { value = "1" })
+                                </td>
+                                <td>
+                @Html.ValidationMessageFor(model => model.Sort)
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    @Html.LabelFor(model => model.TestContent)：
+                              </th>
+                                <td colspan="2" style="height:156px;">
+                                    <textarea id="ABodyContent" cols="100" rows="8" style="width: 410px; height: 152px; visibility: hidden;"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    @Html.LabelFor(model => model.ResultContent)：
+                               </th>
+                                <td colspan="2">
+                                    <textarea id="ABodyResult" cols="100" rows="8" style="width: 410px; height: 152px; visibility: hidden;"></textarea>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    //隐藏字段
+                    @Html.HiddenFor(model => model.ItemID)
+                    @Html.HiddenFor(model => model.VerCode)
+                    @Html.HiddenFor(model => model.Code)        
+                    @Html.HiddenFor(model => model.Result)
+                    @Html.HiddenFor(model => model.TestContent)
+                    @Html.HiddenFor(model => model.ResultContent)        
+                    @Html.HiddenFor(model => model.StepType)
+                    @Html.HiddenFor(model => model.TestDt)
+                    @Html.HiddenFor(model => model.Tester)
+      
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>
+    </div>
+<script type="text/javascript">
+    var editor_Content;
+    var editor_Result;
+    KindEditor.ready(function (K) {
+        editor_Content = K.create('#ABodyContent', {
+            uploadJson: '/Res/editor/kindeditor/asp.net/upload_json.ashx',
+            fileManagerJson: '/Res/editor/kindeditor/asp.net/file_manager_json.ashx',
+            allowFileManager: false,
+            newlineTag: 'br',
+            items: [
+						'undo', 'redo', '|', 'bold', 'italic', 'underline', 'image', 'fontname', 'fontsize', 'forecolor', 'hilitecolor', 'link', 'unlink', 'fullscreen', 'insertfile'
+            ]
+        });
+        editor_Result = K.create('#ABodyResult', {
+            uploadJson: '/Res/editor/kindeditor/asp.net/upload_json.ashx',
+            fileManagerJson: '/Res/editor/kindeditor/asp.net/file_manager_json.ashx',
+            allowFileManager: false,
+            newlineTag: 'br',
+            items: [
+						'undo', 'redo', '|', 'bold', 'italic', 'underline', 'image', 'fontname', 'fontsize', 'forecolor', 'hilitecolor', 'link', 'unlink', 'fullscreen', 'insertfile'
+            ]
+        });
+    });
+    
+
+    $(function () {
+        $("#btnSave").click(function () {
+            var row = $('#ItemList').datagrid('getSelected');
+            $("#Code").val(row.Code);
+            //设置修改状态
+            $("#TestContent").val(editor_Content.html());
+            $("#ResultContent").val(editor_Result.html());
+            $("#Result").val(false);
+            if ($("#TestContent").val().length > 8000) {
+                $.messageBox5s('@Resource.Tip', '测试内容总字数超过最大值8000个字,如果有图片请用图片上传不要粘贴图片');
+                return;
+            }
+            if ($("#ResultContent").val().length > 8000) {
+                $.messageBox5s('@Resource.Tip', '测试结果总字数超过最大值8000个字,如果有图片请用图片上传不要粘贴图片');
+                return;
+            }
+            if ($("form").valid()) {
+                $.ajax({
+                    url: "/DEF/TestJobsDetailSteps/CreateDefect",
+                    type: "Post",
+                    data: $("form").serialize(),
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.type == 1) {
+                            window.parent.frameReturnReLoad(row.Code);
+                        }
+                        $.messageBox5s('@Resource.Tip', data.message);
+                    }
+                });
+            }
+            return false;
+        });
+
+        //返回列表
+        $("#btnReturn").click(function () {
+            window.parent.frameReturnByClose();
+        });
+
+        $('#ItemList').datagrid({
+            url: '/Def/TestJobsDetailItem/GetList?vercode=' + getQueryString("vercode"),
+            width: 230,
+            methord: 'post',
+            height: 406,
+            fitColumns: true,
+            sortName: 'Sort',
+            sortOrder: 'asc',
+            idField: 'Id',
+            pageSize: 15,
+            pagination: true,
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            //rownumbers: true,//行号
+            columns: [[
+                { field: 'Id', title: '@Resource.TitleID', width: 80, sortable: true,hidden:true },
+                { field: 'VerCode', title: '版本号', width: 80, sortable: true },
+                { field: 'Code', title: '用例编码', width: 80, sortable: true },
+                { field: 'Name', title: '@Resource.TitleName', width: 80, sortable: true, hidden: true },
+                { field: 'Description', title: '@Resource.TitleRemark', width: 80, sortable: true, hidden: true },
+                { field: 'Result', title: '测试结果', width: 80, sortable: true, hidden: true },
+                { field: 'Sort', title: '@Resource.TitleSort', width: 80, sortable: true, hidden: true }
+
+            ]],
+            onLoadSuccess: function (data) {
+                $('#ItemList').datagrid('selectRow', 0);
+            }
+        }).datagrid('getPager').pagination({ showPageList: false, showRefresh: false, displayMsg: '',afterPageText:'',beforePageText:'' });
+    });
+
+</script>

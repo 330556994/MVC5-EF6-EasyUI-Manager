@@ -1,0 +1,46 @@
+﻿
+@{
+    string themes = Session["themes"] == null ? "blue" : Session["themes"].ToString();
+    string info = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
+    }
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title><script src="@Url.Content("~/Scripts/jquery.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/easyui/jquery.easyui.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/easyui/easyui-lang-" + info + ".js")" type="text/javascript"></script>
+    @Scripts.Render("~/bundles/easyui/easyuiplus")
+
+    <link href="@Url.Content("~/Content/themes/base/easyui.css")" rel="stylesheet" />
+     @Styles.Render("~/Content/themes/"+themes+"/css")
+     @Styles.Render("~/Content/css")
+     @Scripts.Render("~/bundles/common")
+    @Scripts.Render("~/bundles/jqueryfrom")
+    <link href="@Url.Content("~/Content/fontawesome/css/font-awesome.min.css")" rel="stylesheet" />
+
+</head>
+<body>
+    <div style="padding:4px 5px 0px 5px;">
+        @RenderBody()
+    </div>
+    <div id="fullSetContent"></div>
+    <script type="text/javascript">
+        $(function () {
+            if (isExitsFunction(window.parent.fullSetButtonOut))
+            {
+                $("#fullSetContent").html(window.parent.fullSetButtonOut());
+                $("#fullSetButton").click(function () {
+                    if($(this).attr("class") == "fa fa-expand"){
+                        $(this).removeClass("fa-expand").addClass("fa-compress");
+                    } else {
+                        $(this).removeClass("fa-compress").addClass("fa-expand");
+                    }
+                    window.parent.fullSet();
+                });
+            }
+        });
+      
+    </script>
+</body>
+</html>

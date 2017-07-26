@@ -1,0 +1,276 @@
+﻿@model Apps.Models.DEF.DEF_DefectModel
+@using System.Globalization;
+@using Apps.Locale;
+@using Apps.Common;
+@using Apps.Web.Core;
+@{
+    ViewBag.Title = "新增";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+   
+}
+<style type="text/css">
+    input[type='text']
+    {
+        width: 100px;
+    }
+    #ui-content
+    {
+        overflow: hidden;
+    }
+    #ui-content #uigrid1
+    {
+        float: left;
+        width: 100%;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+    
+    
+    
+    .top1
+    {
+        margin-top: 10px;
+        width: 300px;
+        clear: both;
+    }
+    
+    
+    .top1_left
+    {
+        margin-top: 10px;
+        float: left;
+        width: 360px;
+    }
+    .top1_pic
+    {
+        float: left;
+        height: 130px;
+        width: 160px;
+        vertical-align: middle;
+    }
+    .top2
+    {
+        width: 530px;
+        clear: both;
+    }
+    .top3
+    {
+        width: 530px;
+        clear: both;
+        margin-left: 2px;
+    }
+    .top3 div
+    {
+        float: left;
+        width: 260px;
+    }
+</style>
+@Html.ToolButton("btnSubmit", "fa fa-plus,", "新增",true)
+@Html.ToolButton("btnReturn", "fa fa-reply", Resource.Reply, false)
+<div id="ui-content">
+    <div id="uigrid1">
+        @using (Html.BeginForm())
+        {
+            @Html.ValidationSummary(true)
+       //一行
+            <div class="top1">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.ItemID)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.ItemID)
+@Html.ValidationMessageFor(model => model.ItemID)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.VerCode)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.VerCode)
+@Html.ValidationMessageFor(model => model.VerCode)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Code)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Code)
+@Html.ValidationMessageFor(model => model.Code)
+                </div>
+                
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Title)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Title)
+@Html.ValidationMessageFor(model => model.Title)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.TestContent)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.TestContent)
+@Html.ValidationMessageFor(model => model.TestContent)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.ResultContent)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.ResultContent)
+@Html.ValidationMessageFor(model => model.ResultContent)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Creator)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Creator)
+@Html.ValidationMessageFor(model => model.Creator)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.CrtDt)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.CrtDt)
+@Html.ValidationMessageFor(model => model.CrtDt)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Remark)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Remark)
+@Html.ValidationMessageFor(model => model.Remark)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Receiver)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Receiver)
+@Html.ValidationMessageFor(model => model.Receiver)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.SendDt)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.SendDt)
+@Html.ValidationMessageFor(model => model.SendDt)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.CloseState)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.CloseState)
+@Html.ValidationMessageFor(model => model.CloseState)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Closer)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.Closer)
+@Html.ValidationMessageFor(model => model.Closer)
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.CloseDt)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.CloseDt)
+@Html.ValidationMessageFor(model => model.CloseDt)
+                </div>
+            </div>
+               //二行                               
+            <div class="top2">
+            </div>
+               //三行                               
+            <div class="top3">
+            </div>
+               //隐藏字段
+            @Html.HiddenFor(model => model.ItemID)
+            @Html.HiddenFor(model => model.VerCode)
+            @Html.HiddenFor(model => model.Code)
+   
+            @Html.HiddenFor(model => model.Title)
+            @Html.HiddenFor(model => model.TestContent)
+            @Html.HiddenFor(model => model.ResultContent)
+            @Html.HiddenFor(model => model.Creator)
+            @Html.HiddenFor(model => model.CrtDt)
+            @Html.HiddenFor(model => model.Remark)
+            @Html.HiddenFor(model => model.Receiver)
+            @Html.HiddenFor(model => model.SendDt)
+            @Html.HiddenFor(model => model.CloseState)
+            @Html.HiddenFor(model => model.Closer)
+            @Html.HiddenFor(model => model.CloseDt)
+    
+        }
+    </div>
+</div>
+<script type="text/javascript">
+    //
+    //检查关键字是否已存在
+    $("#ItemID").keyup(function (event) {
+        if (event.keyCode == '13') {
+            var id = $("#ItemID").val();
+            if (id == null || id == "") {
+                 $.messageBox5s('@Resource.Tip', '测试步骤不能为空!');
+                return;
+            }            
+            $.get(".Name/YP/Sample/Checkid", { "id": id },
+                function (data) {
+                    if (data == 1) {
+                         $.messageBox5s('@Resource.Tip', '测试步骤已存在请重新录入!');
+                        return;
+                    }
+                    // $("#XXX").focus();
+                }, "json");
+            }    
+         });    //设置不能修改字段
+        $("#ItemID").prop("disabled", true);
+        $(function () {        //初始化
+            function initPage() {            //初始化字段
+            ////日历            $("#RequestDate").datepicker({ altFormat: 'yy-mm-dd', constrainInput: false, dateFormat: 'yy-mm-dd' });
+            $("#RequestDate").click(function () {
+                $("#ui-datepicker-div").css("left", 360);
+            });
+            ////////////////////////////////////////////////////////////////////////
+            //初始焦点
+            $("#ItemID").focus();
+        };        initPage();
+        //form验证
+        jQuery("form").validate();
+        //保存
+        $("#btnSubmit").click(function () {
+            //设置修改状态
+            $("#ItemID").prop("disabled", false);            
+            if ($("form").valid() == false) {
+                 $.messageBox5s('@Resource.Tip', '上传参数有误');
+                return false;
+            }
+            $("form").submit();
+        });
+        //返回列表
+        $("#btnReturn").click(function () {
+            //window.close();
+            var temps = "0";
+            returnParent(temps);
+        });
+        //提交
+        $("form").submit(function (form) {
+            if (form.result) {
+                $.ajax({
+                    url: "/Defect/Create", //编辑为Edit
+                    type: "Post",
+                    data: $("form").serialize(),
+                    dataType: "json",
+                    success: function (data) {
+                        //设置修改状态
+                        $("#ItemID").prop("disabled", true);
+                        //显示信息，由信息数据结构{type:0,message:"hello world",value:"xxxxx"}
+                         $.messageBox5s('@Resource.Tip',data.message);
+                        try {
+                            //ie会出错,加入异常处理
+                            window.opener.document.getElementById("btnRefresh").click();
+                            //刷新父窗口数据内容                       
+                        } catch (err) {                        }
+                    }
+                });
+            }
+            return false;
+        });    });
+   
+</script>

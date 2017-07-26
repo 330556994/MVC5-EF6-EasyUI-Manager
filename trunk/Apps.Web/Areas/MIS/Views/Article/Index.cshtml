@@ -1,0 +1,179 @@
+﻿@using Apps.Core.PageControl;
+@model Apps.Core.PageControl.BaseList<Apps.Models.MIS.MIS_ArticleModel>
+@using Apps.Web.Core;
+@using Apps.Common;
+@using Apps.Models.Sys;
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+    List<permModel> perm = null;
+}
+<style type="text/css">
+body{color:#33383D;text-align:center; overflow:hidden;}
+a{color:#3B8DD1;text-decoration:none;}
+a:hover{color:#8CAC52;}
+body,button,input,select,textarea{ font:12px/1.5 arial; }
+p, ul, li, dl, dd, dt, form, h1, h2, h3, h4, h5, h6 {
+    list-style: none outside none;
+}
+.clear{ clear:both}
+        .wrap{ margin:0 auto; clear:both; width:980px; text-align:left; }
+	.wrap:after{clear:both;content:".";display:block;height:0;visibility:hidden;}
+.boxwrap{ margin:0 auto; height:auto; border:1px solid #E2E2E2; text-align:left; }
+	.boxwrap:after{clear:both;content:".";display:block;height:0;visibility:hidden;}
+
+.left180{float:left;width:180px;}
+.left264{float:left;width:264px;}
+.left294{float:left;width:294px;}
+.left300{float:left;width:300px;}
+.left325{float:left;width:325px;}
+.left710{float:left;display:inline;border-left:1px solid #E2E2E2;background:#fff;width:100%}
+
+
+/*侧栏目导航*/
+.sidebar{padding:20px;}
+	.sidebar h3{border-bottom:1px solid #DADADA;color:#444;font-size:12px;margin-bottom:5px;padding-bottom:5px;}
+		.sidebar h3 span{color:#339900;float:right;font-weight:normal;}
+		.sidebar ul{margin-bottom:16px;}
+		.sidebar ul li{_display:inline;}
+		.sidebar li a{background-position:left -68px;border-bottom:1px solid #F2F2F2;color:#888;display:block;padding:8px 0 8px 20px;}
+		.sidebar li a:hover{background-color:#FBFBFB;background-position:left -68px;border-color:#DADADA;color:#333;}
+		.sidebar li a i{background:#D6D6D6;border-radius:20px 20px 20px 20px;color:#FFF;float:right;font-size:10px;font-style:normal;height:12px;line-height:12px;margin-top:1px;overflow:hidden;padding:1px 4px;text-align:center;width:12px;}
+		.sidebar li a .time{color:#999;margin-right:10px;}
+	.sidebar .section p{clear:both;display:block;float:none;padding:5px 0;line-height:22px;color:#5E5E5E;}
+.navbar{margin-bottom:16px;}
+	.navbar:after{clear:both;content:".";display:block;height:0;visibility:hidden;}
+	.navbar li{clear:both;padding-bottom:10px;}
+		.navbar li a{margin:0;padding:0;background:none;border:none;}.navbar li a:hover{background:none;border:none;}
+		.navbar li h4{margin:0;padding:5px 0 5px 20px;border:none;color:#888;font-weight:normal;height:18px;background:url(/Content/images/Article/sprite.gif) no-repeat left -71px;}
+		.navbar li .list{margin-left:20px;position:relative;}
+		.navbar li .list a{display:block;float:left;padding-left:5%;width:45%;background:url(/Content/images/Article/icon_arrow_blue.gif) no-repeat left center;line-height:24px;}
+		.navbar li .list a.current{color:#3991D0;font-weight:bold;}
+/*焦点*/
+		/*排行*/
+    .rank_list li{position:relative;_display:block;padding:10px 0 0 25px;height:20px;vertical-align:top;}
+	.rank_list li a{padding:0;border:none;background:none;color:#888;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;}
+	.rank_list li a:hover{border:none; color:#ff6600}
+	.rank_list li .num{position:absolute;left:0px; top:12px;display:inline-block;vertical-align:-3px;*vertical-align:middle;width:16px;height:16px;margin-right:10px; background:#1389d7;font-style:normal;color:#fff;font-size:10px;font-family:Verdana, Geneva, sans-serif;text-align:center;overflow:hidden;}
+	.rank_list li.active .num{top:9px; background:#d60007; font-family:Georgia, "Times New Roman", Times, serif;}
+	.rank_list li span{float:right;color:#999;}
+	 .search{ margin-top:12px; float:right; padding-right:20px;}
+	 .search .input{display:block;margin:0;padding:4px 8px;float:left;background:#EEE;border:medium none;border-radius:2px 0 0 2px;color:#B3B3B3;font-size:13px;height:20px;line-height:20px;width:220px;}
+	 .search .submit{float:left; background:#8CAC52; border:medium none ;border-radius:0 2px 2px 0; color:#FFF; cursor:pointer; height:28px; padding:0 10px;}
+    </style>
+<script type="text/javascript">
+    $(function () {
+        var par = getQueryString("category");
+        if (par != null) {
+            $("#category_" + par).addClass("current");
+        }
+        $("#Search").click(function () {
+            window.location = "/Mis/Article/Index/1?querystr=" + encodeURI($("#keywords").val());
+        });
+        $("#keywords").keydown(function (e) {
+            if (e.which == 13) {
+                $("#Search").trigger("click");
+                return false
+            }
+        });
+
+        $(".left710").height($(window).height()-10);
+    });
+    function Show(title,url) {
+      $("#modalwindow").html("<iframe width='100%' height='100%' scrolling='no' frameborder='0''  src='"+url+"'></iframe>");
+            $("#modalwindow").window({ title: title, width: 800, height: 600, iconCls: 'fa fa-list' }).window('open');
+    }
+</script>
+
+<div id="modalwindow" class="easyui-window" data-options="modal:true,closed:true,minimizable:false,shadow:false"></div>
+<div class="boxwrap">
+    <table style="width:100%">
+        <tr>
+            <td style="width:400px; vertical-align:top">
+                <div class="left325">
+                    <!--Sidebar-->
+                    <div class="sidebar">
+                        <h3>
+                            文章类别
+                        </h3>
+                        <ul class="navbar">
+                            @foreach (var model in (List<Apps.Models.MIS.MIS_Article_CategoryModel>)ViewBag.CategoryList)
+                            {
+                                <li>
+                                    <h4>@(model.Name)</h4>
+                                    @foreach (var model1 in model.clildren)
+                                    {
+                                        <div class="list">
+                                            <a id="category_@(model1.Id)" href="/Mis/Article/Index?cid=@(model1.Id)">@(model1.Name)</a>
+                                        </div>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                        <div class="clear">
+                        </div>
+                        @* <h3>
+                        人气排行</h3>
+                    <ul class="rank_list">
+                        <li class="active"><span>10-20</span> <i class="num">1</i><a href="/news/show-77.aspx">历史性时刻：ARM首次成功模拟运行x86</a>
+                        </li>
+                    </ul>*@
+                    </div>
+                    <!--/Sidebar-->
+                </div>
+            </td>
+            <td>
+                <div class="left710">
+                    <div class="search">
+                        <input type="text" placeholder="输入回车搜索" autofocus="" x-webkit-speech="" class="input" name="keywords"
+                               id="keywords">
+                        <input type="submit" id="Search" value="搜索" class="submit">
+                    </div>
+                    <!--Content-->
+                    <div class="main_box sidebar clear">
+                        <h3>
+                            文章列表
+                        </h3>
+                        <ul class="rank_list" style="padding: 0 10px 0 10px">
+                            @foreach (Apps.Models.MIS.MIS_ArticleModel art in Model)
+                {
+                                <li class="active">
+                                    <span>@art.CreateTime</span><a href="javascript:Show('@(art.Title)','/Mis/Article/Details?id=@(art.Id)')">
+                                        [@(art.CategoryName)]
+                                        @art.Title
+                                    </a>
+                                </li>
+                }
+                        </ul>
+                        <table class="pages-box">
+                            <tr>
+                                <td>
+                                    共 @Model.TotalPage 页，@Model.TotalItemCount 条记录
+                                </td>
+                                <td>
+                                    @Html.Pager(Model, new PagerOptions()
+{
+    CurrentPagerItemWrapperFormatString = "<span class=\"cpb\">{0}</span>",
+    NumericPagerItemWrapperFormatString = "<span class=\"item\">{0}</span>",
+    CssClass = "pages",
+    SeparatorHtml = " ",
+    ShowPageIndexBox = true,
+    ShowGoButton = false,
+    PageIndexBoxWrapperFormatString = "&nbsp;&nbsp;第 {0} 页",
+    PageIndexParameterName = "id",
+    AlwaysShowFirstLastPageNumber = true
+})
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <!--/Content-->
+                </div>
+
+            </td>
+
+       
+        </tr>
+    </table>
+</div>

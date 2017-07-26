@@ -1,0 +1,305 @@
+﻿@model Apps.Models.DEF.DEF_TestCaseModel
+@using System.Globalization;
+@using Apps.Models.Sys;
+@using Apps.Common;
+@using Apps.Web.Core;
+@using Apps.Locale;
+@{
+    ViewBag.Title = "测试用例";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+    List<permModel> perm = (List<permModel>)ViewBag.perm;
+    if (perm == null)
+    {
+        perm = new List<permModel>();
+    }
+   
+}
+
+<table class="wid100f">
+    <tr>
+        <td style="vertical-align: top">
+
+            <table>
+                <tr>
+                    <td style="height: 30px; width: 220px;">分类选择：<input class="easyui-combotree" id="caseTypeTree" style="width: 150px;">
+                    </td>
+                    <td>
+                        <div class="mvctool">
+                            <input id="txtQuery" style="margin-top: 4px; width: 100px;" type="text" class="searchText" />
+                            @*操作*@
+                            @Html.ToolButton("btnQuery", "fa fa-search", Resource.Query,ref perm, "Query", true)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <table id="caseList">
+                        </table>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="2">
+                        <div id="Description" style="width: 588px; height: 100px; border: 1px #ccc solid; margin-top: 5px; padding: 5px; overflow: auto">
+                            点击行可以查看用例的说明！
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+        </td>
+        <td style="width: 5px;">&nbsp;</td>
+
+        <td style="vertical-align: top">
+            <div class="mvctool">
+                @Html.ToolButton("btnCreateSteps", "fa fa-plus", "新增用例步骤",ref perm, "Create", true)
+            </div>
+            <table id="stepsList">
+            </table>
+        </td>
+    </tr>
+</table>
+<div id='popwin'>
+</div>
+<div id="modalwindow">
+</div>
+<!--测试用例-->
+<script type="text/javascript">
+    //ifram 返回
+    function frameReturnByClose() {
+        $("#modalwindow").window('close');
+    }
+    function frameReturnByReload(flag) {
+        if (flag)
+            $("#List").datagrid('load');
+        else
+            $("#List").datagrid('reload');
+    }
+    function frameReturnByMes(mes) {
+        $.messageBox5s('@Resource.Tip', mes);
+    }
+    //编辑后执行
+    function ReturnEdit() {
+        jQuery("#List").trigger("reload");
+    }
+    //新增关闭
+    function ReturnCloseDialog() {
+        $("#modalwindow").dialog('close');
+    }
+    $(function () {
+        $("#btnQuery").click(function () {
+            var queryStr = $("#txtQuery").val();
+            if (queryStr == null) {
+                queryStr = "%";
+            }
+            var comTreeVal = $('#caseTypeTree').combotree('getValue');
+            $("#caseList").datagrid("load", { queryStr: queryStr, moduleId: comTreeVal });
+        });
+
+
+        //返回列表
+        $("#btnReturn").click(function () {
+            //window.close();
+            var temps = "0";
+            returnParent(temps);
+        });
+        //查询
+        $("#btnSearch").click(function () {
+            var queryStr = $("#txtQuery").val();
+            //如果查询条件为空默认查询全部
+            if (queryStr == null) {
+                queryStr = "%";
+            }
+
+            //提交查询
+            $("#caseList").datagrid("load", { queryStr: queryStr });
+            $('#stepsList').datagrid('loadData', { total: 0, rows: [] });
+
+        });
+
+        //分类combotree
+        $('#caseTypeTree').combotree({
+            url: '/DEF/caseType/GetListByComTree'
+            , onSelect: function (node) {
+                $("#caseList").datagrid("load", { moduleId: node.id });
+            }, onLoadSuccess: function (node, data) { //加载成功选择第一行
+                $('#caseTypeTree').combotree("setValue", "_all");
+            }
+
+
+        });
+        //用例分例表格
+        var runtime = 0;
+
+
+        $('#caseList').datagrid({
+            url: '@Url.Action("GetListByTestCase")',
+            width: 600,
+            methord: 'post',
+            height: SetGridHeightSub(161),
+            fitColumns: true,
+            sortName: 'Sort',
+            sortOrder: 'asc',
+            idField: 'Code',
+            pageSize: 15,
+            pageList: [15, 20, 30, 40, 50],
+            pagination: true,
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            //rownumbers: true,//行号
+            columns: [[
+               { field: 'Code', title: '代码', width: 80, sortable: true },
+               { field: 'Name', title: '@Resource.TitleName', width: 80, sortable: true },
+               { field: 'Description', title: '@Resource.TitleRemark', width: 80, sortable: true, hidden: true },
+               { field: 'ModuleId', title: '所属', width: 80, sortable: true, hidden: true },
+               { field: 'Sort', title: '@Resource.TitleSort', width: 80, sortable: true }
+            ]],
+            onClickRow: function (index, data) {
+
+                var row = $('#caseList').datagrid('getSelected');
+                $("#Description").html(row.Description);
+                $("#stepsList").datagrid("load", { code: row.Code });
+            }
+        });
+
+
+
+        $('#stepsList').datagrid({
+            url: '/Def/TestCaseSteps/GetList',
+            width: SetGridWidthSub(615),
+            methord: 'post',
+            height:  SetGridHeightSub(45),
+            fitColumns: true,
+            sortName: 'Sort',
+            sortOrder: 'asc',
+            idField: 'ItemID',
+            pageSize: 15,
+            pageList: [15, 20, 30, 40, 50],
+            pagination: true,
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            //rownumbers: true,//行号
+            columns: [[
+             {
+                 field: 'opt',
+                 title: "操作",
+                 width: 50,
+                 align: 'center',
+                 formatter: function (value, row, index) {
+                     if (row.editing) {
+                         var s = '<a href="#" title="保存" class="fa fa-save" onclick="saverow(' + index + ')"></a><a href="#" title="取消" class="fa fa-reply" onclick="cancelrow(' + index + ')"></a> ';
+                         var c = '';
+                         return s+c;
+                     } else {
+                         var e = '<a href="#" title="修改" class="fa fa-pencil" onclick="editrow(' + index + ')"></a> ';
+                         var d = '<a href="#" title="删除" class="fa fa-trash" onclick="delrow(' + index + ',this)"></a>';
+                         return e + d;
+                     }
+                 }
+             },
+               { field: 'ItemID', title: '@Resource.TitleID', width: 80, sortable: true, hidden: true },
+               { field: 'Code', title: '用例编码', width: 80, sortable: true, hidden: true },
+               { field: 'Title', title: '标题', width: 80, sortable: true, editor: 'text' },
+               { field: 'TestContent', title: '测试内容', width: 180, sortable: true, editor: 'text' },
+               { field: 'State', title: '状态', width: 40, sortable: true },
+               { field: 'sort', title: '@Resource.TitleSort', width: 40, sortable: true, editor: 'numberbox' }
+            ]],
+            onBeforeEdit: function (index, row) {
+                row.editing = true;
+                updateActions(index);
+            },
+            onAfterEdit: function (index, row) {
+                row.editing = false;
+                updateActions(index);
+            },
+            onCancelEdit: function (index, row) {
+                row.editing = false;
+                updateActions(index);
+            }
+        });
+    });
+    //更新按钮状态
+    function updateActions(index) {
+            $('#stepsList').datagrid('updateRow', {
+                index: index,
+                row: { action: '' }
+            });
+    }
+    //保存数据
+    function saverow(index)
+    {
+        $('#stepsList').datagrid('selectRow', index);//先选中
+        var row = $('#stepsList').datagrid('getSelected');//获取选中
+        $('#stepsList').datagrid('endEdit', index);//结束编辑
+        //保存数据到后台
+        $.ajax({
+            url: "/Def/TestCaseSteps/Edit",
+            type: "Post",
+            data: row,
+            dataType: "json",
+            success: function (data) {
+                if (data.type == 0)
+                {
+                    $('#stepsList').datagrid('rejectChanges');//修改失败撤销修改
+                }
+                $.messageBox5s('@Resource.Tip', data.message);
+            }
+        });
+        cancelrow(index);//保存后返回操作
+
+    }
+    //开始编辑
+    function editrow(index) {
+        $('#stepsList').datagrid('selectRow', index).datagrid('beginEdit', index);
+    }
+    //取消编辑
+    function cancelrow(index) {
+        $('#stepsList').datagrid('cancelEdit', index);
+    }
+    function delrow(index) {
+        $('#stepsList').datagrid('selectRow', index);
+        var row = $('#stepsList').datagrid('getSelected');
+        if (row != null) {
+            $.messager.confirm('@Resource.Tip', '要删除用例步骤?', function (r) {
+                if (r) {
+                    $.ajax({
+                        url: "/Def/TestCaseSteps/Delete",
+                        type: "Post",
+                        data: { id: row.ItemID }, //{a:aValue,b:bValue}
+                        dataType: "json",
+                        success: function (data) {
+                            var row = $('#caseList').datagrid('getSelected');
+                            $("#stepsList").datagrid("load", { code: row.Code });
+                            $.messageBox5s('@Resource.Tip', data.message);
+                        }
+                    });
+                }
+            });
+        } else { $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords'); }
+    }
+
+    $(function () {
+        //新增
+        $("#btnCreateSteps").click(function () {
+            var row = $('#caseList').datagrid('getSelected');
+            if (row != null) {
+                $("#modalwindow").html(' <iframe src="/Def/TestCaseSteps/Create?code=' + row.Code + '" width="100%" scrolling="no" height="99%" frameborder="0"  ></iframe>');
+                $("#modalwindow").window({ height: 400, width: 480, title: "新增测试步骤", modal: true });
+            } else { $.messageBox5s('@Resource.Tip', '请在左边选择一个用例'); }
+        });
+            $(window).resize(function () {
+                $('#caseList').datagrid('resize', {
+                    height: SetGridHeightSub(161)
+                });
+                $('#stepsList').datagrid('resize', {
+                    width: SetGridWidthSub(615),
+                    height:  SetGridHeightSub(45)
+                });
+
+            });
+        });
+        //新增用例关系后刷新
+        function ReloadStepsList(code) {
+            $("#stepsList").datagrid("load", { code: code });
+        }
+</script>

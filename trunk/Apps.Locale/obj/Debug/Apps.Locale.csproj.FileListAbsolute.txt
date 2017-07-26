@@ -1,0 +1,19 @@
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\bin\Debug\Apps.Locale.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\bin\Debug\Apps.Locale.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\bin\Debug\en-US\Apps.Locale.resources.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\obj\Debug\Apps.Locale.csprojResolveAssemblyReference.cache
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\obj\Debug\Apps.Locale.Resource.resources
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\obj\Debug\Apps.Locale.Resource.en-US.resources
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\obj\Debug\Apps.Locale.csproj.GenerateResource.Cache
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\obj\Debug\en-US\Apps.Locale.resources.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\obj\Debug\Apps.Locale.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\obj\Debug\Apps.Locale.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\bin\Debug\Apps.Locale.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\bin\Debug\Apps.Locale.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\bin\Debug\en-US\Apps.Locale.resources.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\obj\Debug\Apps.Locale.Resource.resources
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\obj\Debug\Apps.Locale.Resource.en-US.resources
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\obj\Debug\Apps.Locale.csproj.GenerateResource.Cache
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\obj\Debug\en-US\Apps.Locale.resources.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\obj\Debug\Apps.Locale.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Locale\obj\Debug\Apps.Locale.pdb

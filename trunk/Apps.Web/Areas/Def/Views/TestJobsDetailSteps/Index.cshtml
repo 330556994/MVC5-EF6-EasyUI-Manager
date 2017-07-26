@@ -1,0 +1,346 @@
+﻿@model Apps.Models.DEF.DEF_TestJobsDetailStepsModel
+@using System.Globalization;
+@using Apps.Models.Sys;
+@using Apps.Common;
+@using Apps.Web.Core;
+@using Apps.Locale; 
+@{
+    ViewBag.Title = "测试步骤";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+    List<permModel> perm = (List<permModel>)ViewBag.perm;
+    if (perm == null)
+    {
+        perm = new List<permModel>();
+    }
+   
+}
+<script src="@Url.Content("~/Resources/kindeditor/kindeditor-min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/def_tools.js")" type="text/javascript"></script>
+<div class="mvctool">
+    <input id="txtQuery" type="text" class="searchText" />
+    @*操作*@
+    @Html.ToolButton("btnQuery", "fa fa-search", Resource.Query,ref perm, "Query", true)
+    @Html.ToolButton("btnRefresh", "fa fa-refresh", Resource.Refresh, true)
+    @Html.ToolButton("btnCreate", "fa fa-plus", "新增测试步骤",ref perm, "Create", false)
+    @Html.ToolButton("btnAllSet", "fa fa-cog", "设置步骤人员及时间", true)
+</div>
+ @Html.Partial("~/Views/Shared/_DEF_ComboGrid.cshtml")
+<table>
+    <tbody>
+        <tr>
+            <td>
+                <table id="ItemList">
+                </table>
+            </td>
+            <td width="605px">
+                <table id="List">
+                </table>
+                @using (Html.BeginForm())
+                {
+                    @Html.ValidationSummary(true)               
+                     <div class="gray pt5">@Html.LabelFor(model => model.TestContent)</div>
+                    <div>
+                        <div id="Description" style="width: 588px; height: 100px; border: 1px #ccc solid; margin-top: 5px; padding: 5px; overflow: auto">
+                            点击行可以查看用例的说明！
+                        </div>
+                    </div>                                 //隐藏字段
+                    @Html.HiddenFor(model => model.ItemID)    
+                    @Html.HiddenFor(model => model.VerCode)
+                    @Html.HiddenFor(model => model.Code)
+                    @Html.HiddenFor(model => model.TestContent)
+                    @Html.HiddenFor(model => model.Result)
+                    @Html.HiddenFor(model => model.ResultContent)
+                    @Html.HiddenFor(model => model.Sort)
+                    @Html.HiddenFor(model => model.StepType)
+                    @Html.HiddenFor(model => model.TestDt)
+                    @Html.HiddenFor(model => model.Tester)
+         
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div id="dailydeal">
+</div>
+<div id="dailydeal3">
+</div>
+<!--测试项目-->
+<script type="text/javascript">
+    //全局变量
+    var $Title = $("#Title");
+    var $Sort = $("#Sort");
+    var curcode = "";
+
+    $(function () {
+        //初始化
+        function initPage() {
+            $("#ItemID").prop("disabled", true);
+            var vercode = "@ViewBag.vercode";
+            var name = "@ViewBag.name";
+            $("#vercode").val(vercode);
+            $("#name").val(name);
+        }
+        initPage();
+        //选择版本
+        $("#btnOpenVer").click(function () {
+            $("#dailydeal").html(' <iframe src="/Def/TestJobs/LookUp" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+            $("#dailydeal").dialog({ width: 530, height: 360, title: "选择版本", modal: true });
+        });
+        $('#List').datagrid({
+            url: '/Def/TestJobsDetailItem/GetList?vercode=@ViewBag.vercode',
+             width: 600,
+             methord: 'post',
+             height: SetGridHeightSub(220),
+             fitColumns: true,
+             sortName: 'Sort',
+             sortOrder: 'asc',
+             idField: 'Id',
+             pageSize: 15,
+             pageList: [15, 20, 30, 40, 50],
+             pagination: true,
+             striped: true, //奇偶行是否区分
+             singleSelect: true,//单选模式
+             //rownumbers: true,//行号
+             columns: [[
+                 { field: 'Id', title: '@Resource.TitleID', hidden: true, width: 80, sortable: true },
+                 { field: 'VerCode', title: '版本号', width: 80, sortable: true },
+                 { field: 'Code', title: '用例编码', width: 80, sortable: true },
+                 { field: 'Name', title: '用例名称', width: 80, sortable: true },
+                 { field: 'Description', title: '@Resource.TitleRemark', width: 80, sortable: true },
+                 { field: 'Result', title: '测试结果', width: 80, sortable: true },
+                 { field: 'Sort', title: '@Resource.TitleSort', width: 80, sortable: true },
+                 { field: 'ExSort', title: '执行顺序', width: 80, sortable: true },
+                 { field: 'Lock', title: '锁定', width: 80, sortable: true },
+                 { field: 'Developer', title: '开发负责人', width: 80, sortable: true },
+                 { field: 'Tester', title: '测试负责人', width: 80, sortable: true },
+                 { field: 'FinDt', title: 'FinDt', width: 80, sortable: true },
+                 { field: 'TestRequestFlag', title: 'TestRequestFlag', width: 80, sortable: true },
+                 { field: 'DevFinFlag', title: 'DevFinFlag', width: 80, sortable: true }
+             ]],
+             onClickRow: function (index, data) {
+                 var row = $('#ItemList').datagrid('getSelected');
+                 var vercode = $("#vercode").val();
+                 $("#List").datagrid("load", { vercode: vercode, code: row.Code });
+                 $("#Description").html(row.Description);
+             }
+         });
+    });
+    //用户返回
+    function ReturnSelectUser(id, val, name) {
+        $("#Set_Member").val(name);
+        $("#Set_MemberId").val(val);
+    }
+
+    //删除
+    function Delete(id) {
+        if (!confirm("要删除测试步骤")) {
+            return;
+        }
+        var rowData = jQuery("#List").jqGrid('getRowData', id);
+        $.ajax({
+            url: "/Def/TestJobsDetailSteps/Delete",
+            type: "Post",
+            data: { itemid: rowData.ItemID, vercode: rowData.VerCode, code: rowData.Code },
+            dataType: "json",
+            success: function (data) {
+                //刷新
+                jQuery("#List").trigger("reloadGrid");
+                $.messageBox5s('@Resource.Tip', data.message);
+            }
+        });
+    };    //修改
+    function Edit(id) {
+        var rowData = jQuery("#List").jqGrid('getRowData', id);
+        editor1.html(rowData.TestContent);
+        jQuery("#List").jqGrid('editRow', id);
+    };
+    function Save(id) {
+        var testContent = editor1.html();
+        if (testContent.length > 8000) {
+            $.messageBox5s('@Resource.Tip', '测试内容总字数超过最大值8000个字,如果有图片请用图片上传不要粘贴图片');
+            return;
+        }
+        var rowData = jQuery("#List").jqGrid('getRowData', id);
+        jQuery("#List").jqGrid('saveRow', id, function (data) {
+            //var jsMessage = new JsonMessage(data);
+            $.messageBox5s('@Resource.Tip', '保存成功');
+            return true;
+        });
+        //显示jqGrid信息窗口
+        jgAst.ShowInfoDialog();
+    };
+    //取消
+    function Cancel(id) {
+        jQuery("#List").jqGrid('restoreRow', id);
+    };
+    //新增后执行
+    function ReturnCreate() {
+        jQuery("#List").trigger("reloadGrid");
+    }
+    //内嵌窗口关闭
+    function ReturnCloseDialog() {
+        $("#dailydeal").dialog("close");
+    }
+   
+    var curId;
+    $(function () {
+        //批量设置计划开始时间
+        //批量设置计划结束时间
+        //批量分配任务
+        $("#btnAllSet").click(function () {
+            var row = $('#List').datagrid('getSelected');
+            if (row == null) {
+                $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords');
+                return;
+            }
+            $("#dailydeal3").html("<div style='padding:10px;'>开始时间：<input id='SetPlanBeginTime_Time' class='Wdate' onclick='WdatePicker()' value='" + new Date().getFullYear() + "-" + new Date().getMonth() + 1 + "-" + new Date().getDate() + "'></div><div style='padding:10px;'>完成时间：<input id='SetPlanEndTime_Time' class='Wdate' onclick='WdatePicker()' value='" + new Date().getFullYear() + "-" + new Date().getMonth() + 1 + "-" + new Date().getDate() + "'></div><div style='padding:10px;'>执行人员：<input id='Set_Member' type='text' disabled='disabled' value=''><input id='Set_MemberId' type='hidden' value=''><a id='Sel_Member' href='javascript:void(0)''>选择</a></div><div style='padding-left:70px;'><input id='Set_OK' type='button' value='提交'></div>");
+            $("#dailydeal3").dialog({
+                height: 200, width: 300,
+                title: "批量设置",
+                modal: true
+            });
+            $("#Set_OK").unbind().click(function () {
+                $.messager.confirm('@Resource.Tip', '没有填写的被重设为空！确定？', function (r) {
+                    if (r) {
+                        if ($("#SetPlanBeginTime_Time").val() != "") {
+                            if (!isDate_yyyyMMdd($("#SetPlanBeginTime_Time").val())) {
+                                $.messageBox5s('@Resource.Tip', '日期输入不正确，格式为：2012-01-01');
+                                return;
+                            }
+                        }
+                        if ($("#SetPlanEndTime_Time").val() != "") {
+                            if (!isDate_yyyyMMdd($("#SetPlanEndTime_Time").val())) {
+                                $.messageBox5s('@Resource.Tip', '日期输入不正确，格式为：2012-01-01');
+                                return;
+                            }
+                        }
+                        var begintime = $("#SetPlanBeginTime_Time").val();
+                        var endtime = $("#SetPlanEndTime_Time").val();
+                        var member = $("#Set_MemberId").val();
+
+                        $.post("/def/Defect/AllSet", { "ids": "" + ids + "", "begintime": begintime, "endtime": endtime, "member": member },
+                            function (data) {
+                                $.messageBox5s('@Resource.Tip', data.message);
+                                jQuery("#List").trigger("reloadGrid");
+                            }, "json");
+                        $("#dailydeal3").dialog("close");
+                    }
+                });
+
+            });
+            $("#Sel_Member").unbind().click(function () {
+                $("#dailydeal").html(' <iframe src=/sysuser/lookup?owner=3" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+                $("#dailydeal").dialog({ width: 380, height: 440, title: "用户", modal: true });
+            });
+
+
+        });
+        //新增
+        $("#btnCreate").click(function () {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择测试任务!');
+                return;
+            }
+            if (curcode == null || curcode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择测试任务!');
+                return;
+            } $("#dailydeal").html(' <iframe src="/Def/TestJobsDetailSteps/Create?vercode=' + vercode + '&code=' + curcode + '" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+            $("#dailydeal").dialog({ width: 670, height: 370, title: "新增", modal: true });
+        });
+        //查询
+        $("#btnSearch").click(function () {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择测试任务!');
+                return;
+            }
+            var queryStr = $("#txtQuery").val();
+            //如果查询条件为空默认查询全部
+            if (queryStr == null) {
+                queryStr = "%";
+            }
+            queryStr = encodeURI(queryStr);
+            //提交查询
+            jQuery("#ItemList").jqGrid('setGridParam', { url: '/Def/TestJobsDetailItem/GetListNoAction?querystr=' + queryStr + "&vercode=" + vercode, page: 1 }).trigger("reloadGrid");
+            jQuery("#List").jqGrid('clearGridData');
+            editor1.html("");
+        });
+        //刷新
+        $("#btnRefresh").click(function () {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择测试任务!');
+                return;
+            }
+            jQuery("#ItemList").jqGrid('setGridParam', { url: "/Def/TestJobsDetailItem/GetListNoAction?vercode=" + vercode, page: 1 }).trigger("reloadGrid");
+            jQuery("#List").trigger("reloadGrid");
+            editor1.html("");
+        });
+
+
+        $('#List').datagrid({
+            url: '/Def/TestJobsDetailSteps/GetListByCode',
+             width:  SetGridWidthSub(10),
+             methord: 'post',
+             height: SetGridHeightSub(40),
+             fitColumns: true,
+             sortName: 'Sort',
+             sortOrder: 'asc',
+             idField: 'Id',
+             pageSize: 15,
+             pageList: [15, 20, 30, 40, 50],
+             pagination: true,
+             striped: true, //奇偶行是否区分
+             singleSelect: true,//单选模式
+             //rownumbers: true,//行号
+             columns: [[
+                 { field: 'Id', title: '@Resource.TitleID', width: 80, sortable: true },
+                 { field: 'ItemID', title: '项目ID', width: 80, sortable: true },
+                 { field: 'VerCode', title: '版本号', width: 80, sortable: true },
+                 { field: 'Code', title: '用例编码', width: 80, sortable: true },
+                 { field: 'Title', title: '测试步骤', width: 80, sortable: true },
+                 { field: 'TestContent', title: '测试内容', width: 80, sortable: true },
+                 { field: 'Result', title: '测试请求', width: 80, sortable: true },
+                 { field: 'Sort', title: 'Sort', width: 80, sortable: true },
+                 { field: 'ResultContent', title: '测试结果内容', width: 80, sortable: true },
+                 { field: 'ExSort', title: '执行顺序', width: 80, sortable: true },
+                 { field: 'StepType', title: '步骤类型', width: 80, sortable: true },
+                 { field: 'Tester', title: '测试人', width: 80, sortable: true },
+                 { field: 'TestDt', title: '测试时间', width: 80, sortable: true },
+                 { field: 'Developer', title: '开发人', width: 80, sortable: true },
+                 { field: 'PlanStartDt', title: '计划开始', width: 80, sortable: true },
+                 { field: 'PlanEndDt', title: '计划完成', width: 80, sortable: true },
+                 { field: 'FinDt', title: '实际完成', width: 80, sortable: true },
+                 { field: 'TestRequestFlag', title: '测试请求', width: 80, sortable: true },
+                 { field: 'DevFinFlag', title: '参与开发', width: 80, sortable: true }
+             ]],
+             onClickRow: function (index, data) {
+                 var row = $('#List').datagrid('getSelected');
+                 $("#Description").html(row.TestContent);
+             }
+         });
+
+
+        //加载内容到编辑区
+        function LoadData(rowData) {
+            //加载内容到编辑区
+            $("#ItemID").val(rowData.ItemID);
+            $("#VerCode").val(rowData.VerCode);
+            $("#Code").val(rowData.Code);
+            $("#Title").val(rowData.Title);
+            $("#TestContent").val(rowData.TestContent);
+            $("#Result").val(rowData.Result);
+            $("#Sort").val(rowData.Sort);
+            $("#ResultContent").val(rowData.ResultContent);
+        }
+        $(window).resize(function () {
+            $("#List").setGridHeight($(window).height() - 320);
+            $("#ItemList").setGridWidth($(window).width() - 630).setGridWidth($(window).width() - 630);
+            $("#ItemList").setGridHeight($(window).height() - 135);
+        });
+        $("#List").setGridHeight($(window).height() - 320);
+        $("#ItemList").setGridWidth($(window).width() - 630);
+        $("#ItemList").setGridHeight($(window).height() - 135);
+    });
+</script>

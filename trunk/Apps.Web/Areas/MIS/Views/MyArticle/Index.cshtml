@@ -1,0 +1,135 @@
+﻿@using Apps.Web.Core;
+@using Apps.Common;
+@using Apps.Locale;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+}
+<div class="mvctool">
+     <select  class="searchText"  id="selCheck">
+        <option value="1">全部</option>
+        <option value="2">审核</option>
+        <option value="3">未审核</option>
+    </select>
+    <input id="txtQuery" type="text" class="searchText" />
+    @Html.ToolButton("btnQuery", "fa fa-search", Resource.Query, true)
+    @Html.ToolButton("btnCreate", "fa fa-plus", "新增", true)
+    @Html.ToolButton("btnEdit", "fa fa-pencil", "编辑", true)
+    @Html.ToolButton("btnDelete", "fa fa-trash", "删除", true)
+</div>
+<table id="List"></table>
+
+<div id="modalwindow" class="easyui-window" data-options="modal:true,closed:true,minimizable:false,shadow:false"></div>
+@Html.Partial("~/Views/Shared/_Partial_AutoGrid.cshtml")
+<script type="text/javascript">
+    $(function () {
+        $('#List').datagrid({
+            url: '@Url.Action("GetList")',
+            width: SetGridWidthSub(10),
+            methord: 'post',
+            height: SetGridHeightSub(45),
+            fitColumns: true,
+            sortName: 'Sort',
+            sortOrder: 'asc',
+            idField: 'Id',
+            pageSize: 15,
+            pageList: [15, 20, 30, 40, 50],
+            pagination: true,
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            //rownumbers: true,//行号
+            columns: [[
+                { field: 'Id', title: '@Resource.TitleID', width: 80, hidden: true },
+                { field: 'ChannelId', title: '频道', width: 80, sortable: true, hidden: true },
+                { field: 'CategoryId', title: '栏目', width: 80, sortable: false, hidden: true },
+                { field: 'CategoryName', title: '栏目', width: 80, sortable: true },
+                { field: 'Title', title: '标题', width: 180, sortable: false },
+                { field: 'ImgUrl', title: '图片', width: 80, sortable: false, align: 'center', formatter: function (value) { if (value != null) { return "<img src='"+value+"' style='width:80px;height:60px' />";} return ""; } },
+                { field: 'Sort', title: '@Resource.TitleSort', width: 40, sortable: true },
+                { field: 'Click', title: '点击率', width: 40, align: "right", sortable: true },
+                {
+                    field: 'CheckFlag', title: '是否审核', width: 50, align: "center", sortable: true, formatter: function (value) { return CheckFormatter(value) }
+                },
+                { field: 'Checker', title: '审核人', width: 80, sortable: true, hidden: true },
+                { field: 'CheckerName', title: '审核人', width: 80, sortable: true },
+                { field: 'CheckDateTime', title: '审核时间', width: 80, sortable: true },
+                { field: 'Creater', title: '@Resource.TitleCreatePerson', width: 80, sortable: true, hidden: true },
+                 { field: 'CreaterName', title: '@Resource.TitleCreatePerson', width: 80, sortable: true },
+                { field: 'CreateTime', title: '@Resource.TitleCreateTime', width: 80, sortable: true },
+                { field: 'CustomLink', title: '', width: 80, sortable: true, hidden: true },
+                {
+                    field: 'IsType', title: '位置', width: 80, sortable: true, formatter: function (value) {
+                        if (value == 1) {
+                            return "幻灯片";
+                        } else if (value == 2) {
+                            return "首页栏目";
+                        } else {
+                            return "普通文章";
+                        }
+                    }
+                }
+            ]]
+        }).datagrid({
+            rowStyler: function (index, row) {
+                //if (row.CheckFlag == 1) {
+                //    return 'color:blue;';
+                //}
+            }
+        });
+    });
+    //ifram 返回
+    function frameReturnByClose() {
+        $("#modalwindow").window('close');
+    }
+    function frameReturnByReload(flag) {
+        if (flag)
+            $("#List").datagrid('load');
+        else
+            $("#List").datagrid('reload');
+    }
+    function frameReturnByMes(mes) {
+        $.messageBox5s('@Resource.Tip', mes);
+    }
+    $(function () {
+        $("#btnExport").click(function () {
+            $("#modalwindow").html("<iframe width='100%' height='100%' scrolling='no' frameborder='0'' src='/SysHelper/ReportControl'></iframe>");
+            $("#modalwindow").window({ title: '@Resource.Export', width: 320, height: 200, iconCls: 'fa fa-plus' }).window('open');
+        });
+        $("#btnCreate").click(function () {
+            $("#modalwindow").html("<iframe width='100%' height='100%' scrolling='no' frameborder='0'' src='/MIS/MyArticle/Create'></iframe>");
+            $("#modalwindow").window({ title: '@Resource.Create', width: 700, height: 530, iconCls: 'fa fa-plus' }).window('open');
+        });
+        $("#btnEdit").click(function () {
+            var row = $('#List').datagrid('getSelected');
+            if (row != null) {
+                $("#modalwindow").html("<iframe width='100%' height='100%'  frameborder='0' scrolling='no' src='/MIS/MyArticle/Edit?id=" + row.Id + "&Ieguid=" + GetGuid() + "'></iframe>");
+                $("#modalwindow").window({ title: '@Resource.Edit', width: 700, height: 530, iconCls: 'fa fa-pencil' }).window('open');
+            } else { $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords'); }
+        });
+        $("#btnQuery").click(function () {
+            var queryStr = $("#txtQuery").val();
+            if (queryStr == null) {
+                queryStr = "%";
+            }
+            $('#List').datagrid({
+                url: '@Url.Action("GetList")?queryStr=' + encodeURI(queryStr) + '&checkFlag=' + $("#selCheck").val() + ''
+            });
+
+        });
+        $("#btnDelete").click(function () {
+            var row = $('#List').datagrid('getSelected');
+            if (row != null) {
+                $.messager.confirm('@Resource.Tip', '@Resource.YouWantToDeleteTheSelectedRecords', function (r) {
+                    if (r) {
+                        $.post("@Url.Action("Delete")?id=" + row.Id, function (data) {
+                            if (data.type == 1)
+                                $("#List").datagrid('load');
+                            $.messageBox5s('@Resource.Tip', data.message);
+                        }, "json");
+
+                    }
+                });
+            } else { $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords'); }
+        });
+    });
+</script>

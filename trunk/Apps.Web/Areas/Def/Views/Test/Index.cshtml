@@ -1,0 +1,349 @@
+﻿@model Apps.Models.DEF.DEF_TestJobsDetailStepsModel
+@using System.Globalization;
+@using Apps.Models.Sys;
+@using Apps.Common;
+@using Apps.Web.Core;
+@using Apps.Locale;
+@{
+    ViewBag.Title = "测试";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+    List<permModel> perm = (List<permModel>)ViewBag.perm;
+    if (perm == null)
+    {
+        perm = new List<permModel>();
+    }
+   
+}
+<script src="@Url.Content("~/Scripts/kindeditor/kindeditor-min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/def_tools.js")" type="text/javascript"></script>
+<div class="mvctool">
+    @Html.ToolButton("btnCreateDefect", "fa fa-plus", "新增缺陷", true)
+    @Html.ToolButton("btnCreateDefectReport", "fa fa-file-text-o", "生成缺陷报告", false)
+</div>
+
+    @Html.Partial("~/Views/Shared/_DEF_ComboGrid.cshtml")
+
+<table>
+    <tr>
+        <td style="vertical-align: top">
+            <table id="ItemList">
+            </table>
+        </td>
+        <td style="width: 5px;">&nbsp;</td>
+        <td style="vertical-align: top">
+            <div id="tt" class="easyui-tabs" style="width: 610px;">
+                <div title="执行测试步骤" style="padding: 3px;">
+                    <table id="List">
+                    </table>
+
+                </div>
+                <div title="填写测试结果" style="overflow: auto; padding: 4px;">
+                    &nbsp;步骤名称：<span class="gray" id="TextTitle"></span>
+                    &nbsp;&nbsp;步骤ID：<span class="gray" id="TextItemID"></span>
+
+
+
+                    <div style="padding: 2px;">
+                        <input id="ResultContent" name="ResultContent" type="hidden" />
+                        <textarea id="ABody" name="ABody" style="width: 594px;"></textarea>
+                    </div>
+                </div>
+
+            </div>
+            <div class="gray pt5">
+                测试内容：
+            </div>
+            <div id="Description" style="width: 400px; height: 100px; border: 1px #ccc solid; margin-top: 5px; padding: 5px; overflow: auto"></div>
+            <div class="clear box-buts-bot pt5" style="text-align: left">
+                <div class="but-row pr10" style="display: inline">
+                    <!--不可用class="but-disabled"-->
+                    <a id="btnFirstRow" href="#" title="第一行"><span class="arrow-first"></span></a><a
+                        id="btnPriorRow" href="#" title="上一行"><span class="arrow-pre"></span></a><a id="btnNextRow"
+                            href="#" title="下一行"><span class="arrow-next"></span></a><a id="btnLastRow" href="#"
+                                title="最后一行"><span class="arrow-last"></span></a>
+                </div>
+                @Html.ToolButton("btnPass", "fa fa-check", "通过", true)
+                @Html.ToolButton("btnFail", "fa fa-square-o", "未通过", true)
+                @Html.ToolButton("btnCancel", "fa fa-retweet", " 重置", true)
+            </div>
+        </td>
+    </tr>
+</table>
+<div id="modalwindow" class="easyui-window" data-options="modal:true,closed:true,minimizable:false,shadow:false"></div>
+
+<!--测试项目-->
+<script type="text/javascript">
+    var editor1;
+    //测试类
+    function Test() {
+        //property
+        this.curId = null;
+        //当前行        
+        //function
+        if (typeof Test._initialized == "undefined") {
+            Test._initialized = true;
+            //////////////////////////////////////
+            Test.prototype.About = function () {
+                $.messageBox5s('@Resource.Tip', 'Test 1.0');
+            };
+            //生成缺陷报告
+            Test.prototype.CreateDefectReport = function () {
+                var vercode = $("#vercode").val();
+                if (vercode == null || vercode == "") {
+                    $.messageBox5s('@Resource.Tip', '测试任务无效!');
+                    return;
+                }
+                $.ajax({
+                    url: "/Def/Defect/CreateDefectReport",
+                    type: "Post",
+                    data: { vercode: vercode },
+                    dataType: "json",
+                    success: function (data) {
+                        //刷新
+                        $.messageBox5s('@Resource.Tip', data.message);
+                    }
+                });
+            };
+            //通过
+            Test.prototype.RunTest = function (result) {
+                var row = $('#List').datagrid('getSelected');
+                if ( $("#TextItemID").html()!="") {
+                    var resultContext = editor1.html();
+                    $("#ResultContent").val(resultContext);
+                    if ($("#ResultContent").val().length > 8000) {
+                        $.messageBox5s('@Resource.Tip', '测试内容总字数超过最大值8000个字,如果有图片请用图片上传不要粘贴图片');
+                        return;
+                    }
+                    $.ajax({
+                        url: "/Def/TestJobsDetailSteps/RunTest",
+                        type: "Post",
+                        data: { VerCode: row.VerCode, Code: row.Code, ItemID: row.ItemID, Result: result, ResultContent: resultContext },
+                        dataType: "json",
+                        success: function (data) {
+                            //刷新
+                            $("#List").datagrid('load');
+                            $.messageBox5s('@Resource.Tip', data.message);
+                            
+                        }
+                    });
+                } else { $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords'); }
+            };
+      
+        }
+    }
+</script>
+<script type="text/javascript">
+    //删除步骤
+    function delrow(index) {
+        $('#List').datagrid('selectRow', index);
+        var row = $('#List').datagrid('getSelected');
+        if (row != null) {
+            $.messager.confirm('@Resource.Tip', '要删除选择的步骤?', function (r) {
+                if (r) {
+                    $.ajax({
+                        url: "/Def/Test/Delete",
+                        type: "Post",
+                        data: row, //{a:aValue,b:bValue}
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.type == 1) {
+                                var row = $('#ItemList').datagrid('getSelected');
+                                $("#List").datagrid("load", { vercode: row.VerCode, code: row.Code });
+                            }
+                            $.messageBox5s('@Resource.Tip', data.message);
+                        }
+                    });
+                }
+            });
+        } else { $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords'); }
+    }
+    //ifram 返回
+    function frameReturnByClose() {
+        $("#modalwindow").window('close');
+    }
+    function frameReturnReLoad(Code)
+    {
+        var row = $('#ItemList').datagrid('getSelected');
+        if (row.Code == Code)//添加的与当前的选择吻合
+        {
+            $("#List").datagrid("load", { vercode: row.VerCode, code: row.Code });
+            $("#Description").html("");
+            $("#TextItemID").html("");
+            $("#TextTitle").html("");
+            editor1.html("");
+        }
+        $("#modalwindow").window('close');
+    }
+    $(function () {
+        editor1 = KindEditor.create('textarea[name="ABody"]', {
+            height: SetGridHeightSub(308),
+            resizeType: 1,
+            uploadJson: '/Core/upload_ajax.ashx?action=EditorFile&IsWater=1',
+            fileManagerJson: '/Core/upload_ajax.ashx?action=ManagerFile',
+            allowFileManager: false,
+            items: ['source', 'undo', 'redo', 'wordpaste', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist', 'formatblock', 'fontname', 'fontsize', 'forecolor', 'bold', 'italic', 'table', 'link', 'unlink', 'image', 'fullscreen']
+        });
+        //新增缺陷
+        $("#btnCreateDefect").click(function () {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择测试任务!');
+                return;
+            }
+                $("#modalwindow").html(' <iframe src="/Def/TestJobsDetailSteps/CreateDefect?vercode=' + vercode + '" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+                $("#modalwindow").window({ width: 800, height: 450, title: "新增缺陷记录", modal: true }).window('open');
+        });
+
+        $('#ItemList').datagrid({
+            url: '/Def/TestJobsDetailItem/GetList?vercode=@ViewBag.vercode',
+            width: $(window).width() - 625,
+            methord: 'post',
+            height: $(window).height() - 78,
+            fitColumns: true,
+            sortName: 'Sort',
+            sortOrder: 'asc',
+            idField: 'Id',
+            pageSize: 15,
+            pageList: [15, 20, 30, 40, 50],
+            pagination: true,
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            //rownumbers: true,//行号
+            columns: [[
+                { field: 'Id', title: '@Resource.TitleID', width: 80, sortable: true,hidden:true },
+                { field: 'VerCode', title: '版本号', width: 80, sortable: true, hidden: true },
+                { field: 'Code', title: '用例编码', width: 80, sortable: true },
+                { field: 'Name', title: '@Resource.TitleName', width: 80, sortable: true },
+                { field: 'Description', title: '@Resource.TitleRemark', width: 80, sortable: true },
+                { field: 'Result', title: '测试结果', width: 80, sortable: true },
+                { field: 'Sort', title: '@Resource.TitleSort', width: 80, sortable: true }
+
+            ]],
+            onClickRow: function (index, data) {
+                var row = $('#ItemList').datagrid('getSelected');
+                $("#List").datagrid("load", { vercode: row.VerCode, code: row.Code });
+                $("#Description").html("");
+                $("#TextItemID").html("");
+                $("#TextTitle").html("");
+                editor1.html("");
+            }
+        });
+    });
+    $(function () {
+        var test = new Test();
+        //生成缺陷报告
+        $("#btnCreateDefectReport").click(function () {
+            test.CreateDefectReport();
+        });
+         //刷新
+        $("#btnRefresh").click(function () {
+            jQuery("#List").trigger("reloadGrid");
+        });
+        //通过
+        $("#btnPass").click(function () {
+            test.RunTest(true);
+        });
+        //未通过
+        $("#btnFail").click(function () {
+            test.RunTest(false);
+        });
+        //取消
+        $("#btnCancel").click(function () {
+            test.RunTest(null);
+        });
+        $('#List').datagrid({
+            url: '/Def/TestJobsDetailSteps/GetListByCode',
+            width: 602,
+            methord: 'post',
+            height: SetGridHeightSub(280),
+            fitColumns: true,
+            sortName: 'Sort',
+            sortOrder: 'asc',
+            idField: 'ItemID',
+            pageSize: 15,
+            pageList: [15, 20, 30, 40, 50],
+            pagination: true,
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            columns: [[
+                {
+                    field: 'opt',
+                    title: "操作",
+                    width: 30,
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var d = '<a href="#" title="删除" class="fa fa-trash" onclick="delrow(' + index + ',this)"></a>';
+                        return d;
+                    }
+                },
+                { field: 'Id', title: '@Resource.TitleID', width: 80, sortable: true, hidden: true },
+                 { field: 'Title', title: '步骤名称', width: 80, sortable: true },
+                { field: 'ItemID', title: '项目ID', width: 40, sortable: true },
+                { field: 'VerCode', title: '版本号', width: 80, sortable: true, hidden: true },
+                { field: 'Code', title: '用例编码', width: 80, sortable: true, hidden: true },
+                { field: 'TestContent', title: '测试内容', width: 80, sortable: true, hidden: true },
+                {
+                    field: 'Result', title: '测试结果',align:'center', width: 40, sortable: true, formatter: function (value) {
+                        return GetPassResut(value);
+                    }
+                },
+                { field: 'ResultContent', title: '测试结果内容', width: 80, sortable: true, hidden: true },
+                {
+                    field: 'TestRequestFlag', title: '测试请求', align: 'center', width: 40, sortable: true, formatter: function (value) {
+                        return GetPassResut(value);
+                    }
+                },
+                { field: 'Sort', title: '@Resource.TitleSort', width: 40, sortable: true }
+            ]],
+            onClickRow: function (index, data) {
+                LoadListData();
+            },
+            onLoadSuccess: function (data) {
+                
+                //$('#List').datagrid('selectRow', 0);
+                //LoadListData();
+            }
+        });
+
+        $(window).resize(function () {
+            $('#List').datagrid('resize', {
+                height: SetGridHeightSub(285)
+            });
+            $('#ItemList').datagrid('resize', {
+                width: SetGridWidthSub(625),
+                height: SetGridHeightSub(83)
+            });
+        });
+
+
+
+        //导航表格
+        var rowNav = new RowNav("#List");
+        $("#btnFirstRow").click(function () {
+            rowNav.FirstRow();
+            LoadListData();
+        });
+        $("#btnPriorRow").click(function () {
+            rowNav.PriorRow();
+            LoadListData();
+        });
+        $("#btnNextRow").click(function () {
+            rowNav.NextRow();
+            LoadListData();
+        });
+        $("#btnLastRow").click(function () {
+            rowNav.LastRow();
+            LoadListData();
+        });
+    });
+
+    function LoadListData()
+    {
+        var row = $('#List').datagrid('getSelected');
+        $("#Description").html(row.TestContent);
+        $("#TextItemID").html(row.ItemID);
+        $("#TextTitle").html(row.Title);
+        var rc = row.ResultContent;
+        editor1.html(rc == null ? "" : rc);
+    }
+</script>

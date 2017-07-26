@@ -1,0 +1,86 @@
+﻿@model Apps.Models.DEF.DEF_TestCaseStepsModel
+@using System.Globalization;
+@using Apps.Common;
+@using Apps.Web.Core;
+@using Apps.Models.Sys;
+@using Apps.Locale;
+@{
+    ViewBag.Title = "新增";
+    Layout = "~/Views/Shared/_Index_LayoutEdit.cshtml";
+    List<permModel> perm = (List<permModel>)ViewBag.perm;
+    if (perm == null)
+    {
+        perm = new List<permModel>();
+    }
+   
+}
+<script type="text/javascript">
+    $(function () {
+        $("#btnSave").click(function () {
+            //设置修改状态
+            if ($("#TestContent").val().length > 2000) {
+                $.messageBox5s('@Resource.Tip', '测试内容总字数超过最大值2000个字,如果有图片请用图片上传不要粘贴图片');
+                return;
+            }
+            if ($("#CreateForm").valid()) {
+                $.ajax({
+                    url: "/DEF/TestCaseSteps/Create",
+                    type: "Post",
+                    data: $("#CreateForm").serialize(),
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.type == 1) {
+                            $.messageBox5s('@Resource.Tip', data.message);
+                            $("#CreateForm input,#CreateForm textarea").val("");
+                            window.parent.ReloadStepsList("@ViewBag.code")
+                        }
+                        else {
+                            $.messageBox5s('@Resource.Tip', data.message);
+                        }
+                    }
+                });
+            }
+            return false;
+        });
+    }); $(function () {
+        $("#Code").val("@ViewBag.code");
+        });
+</script>
+<div class="mvctool bgb">
+    @Html.ToolButton("btnSave", "fa fa-save", Resource.Save,ref perm, "Save", true)
+</div>
+@using (Html.BeginForm("Create", "TestCaseSteps", null, FormMethod.Post, new { Id = "CreateForm" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Code)
+    <table class="formtable">
+        <tbody>
+            <tr>
+                <th>
+                    @Html.LabelFor(model => model.Title)：
+                 </th>
+                <td style="width: 110px">
+                    @Html.EditorFor(model => model.Title)  @Html.ValidationMessageFor(model => model.Title)
+                </td>
+            
+            </tr>
+            <tr>
+                <th>
+                    @Html.LabelFor(model => model.sort)：
+                </th>
+                <td style="width: 110px">
+                    @Html.TextBoxFor(model => model.sort)  @Html.ValidationMessageFor(model => model.sort)
+                </td>
+              
+            </tr>
+            <tr>
+                <th>
+                    @Html.LabelFor(model => model.TestContent)：
+                 </th>
+                <td>
+                    @Html.TextAreaFor(model => model.TestContent, new { style = "width:295px; height:225px;" })
+                @Html.ValidationMessageFor(model => model.TestContent)</td>
+            </tr>
+        </tbody>
+    </table>
+}

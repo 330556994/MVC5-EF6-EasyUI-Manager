@@ -1,0 +1,149 @@
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Jobs.dll.config
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Jobs.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Jobs.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.BLL.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Common.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.DAL.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.IBLL.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.IDAL.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.BLL.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.DAL.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.IBLL.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.IDAL.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Models.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.BLL.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.DAL.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.IBLL.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.IDAL.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Common.Logging.Core.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Common.Logging.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\EntityFramework.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\EntityFramework.SqlServer.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Quartz.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Senparc.Weixin.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Senparc.Weixin.MP.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Microsoft.Practices.Unity.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Locale.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Newtonsoft.Json.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\System.Web.Mvc.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\System.Web.WebPages.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Microsoft.Practices.ServiceLocation.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\System.Web.WebPages.Deployment.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.BLL.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.BLL.dll.config
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Common.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.DAL.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.DAL.dll.config
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.IBLL.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.IDAL.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.IDAL.dll.config
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.BLL.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.BLL.dll.config
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.DAL.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.DAL.dll.config
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.IBLL.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.IDAL.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.IDAL.dll.config
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Models.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Models.dll.config
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.BLL.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.DAL.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.DAL.dll.config
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.IBLL.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.IDAL.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Common.Logging.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Common.Logging.xml
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Common.Logging.Core.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Common.Logging.Core.xml
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\EntityFramework.xml
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\EntityFramework.SqlServer.xml
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Quartz.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Quartz.xml
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Senparc.Weixin.xml
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Senparc.Weixin.MP.xml
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Microsoft.Practices.Unity.xml
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Locale.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Newtonsoft.Json.xml
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\System.Web.Mvc.xml
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\System.Web.WebPages.xml
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Microsoft.Practices.ServiceLocation.xml
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\System.Web.WebPages.Deployment.xml
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\en-US\Apps.Locale.resources.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\zh-Hans\System.Web.Mvc.resources.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\zh-Hans\System.Web.WebPages.resources.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\zh-Hans\System.Web.WebPages.Deployment.resources.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\obj\Debug\Apps.Jobs.csprojResolveAssemblyReference.cache
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\obj\Debug\Apps.Jobs.dll
+D:\项目\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\obj\Debug\Apps.Jobs.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Jobs.dll.config
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Jobs.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Jobs.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.BLL.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Common.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.DAL.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.IBLL.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.IDAL.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.BLL.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.DAL.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.IBLL.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.IDAL.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Models.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.BLL.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.DAL.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.IBLL.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.IDAL.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Common.Logging.Core.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Common.Logging.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\EntityFramework.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Quartz.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Senparc.Weixin.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Senparc.Weixin.MP.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Microsoft.Practices.Unity.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Locale.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Newtonsoft.Json.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\System.Web.Mvc.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\System.Web.WebPages.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Microsoft.Practices.ServiceLocation.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Microsoft.Web.Infrastructure.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\System.Web.WebPages.Deployment.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.BLL.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Common.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.DAL.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.IBLL.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.IDAL.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.BLL.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.DAL.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.IBLL.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.MIS.IDAL.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Models.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.BLL.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.DAL.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.IBLL.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.WC.IDAL.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Common.Logging.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Common.Logging.xml
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Common.Logging.Core.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Common.Logging.Core.xml
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\EntityFramework.xml
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Quartz.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Quartz.xml
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Senparc.Weixin.xml
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Senparc.Weixin.MP.xml
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Microsoft.Practices.Unity.xml
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Apps.Locale.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Newtonsoft.Json.xml
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\System.Web.Mvc.xml
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\System.Web.WebPages.xml
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\Microsoft.Practices.ServiceLocation.xml
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\System.Web.WebPages.Deployment.xml
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\en-US\Apps.Locale.resources.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\zh-Hans\System.Web.Mvc.resources.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\zh-Hans\System.Web.WebPages.resources.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\bin\Debug\zh-Hans\System.Web.WebPages.Deployment.resources.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\obj\Debug\Apps.Jobs.csprojResolveAssemblyReference.cache
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\obj\Debug\Apps.Jobs.dll
+C:\Users\gongtao\Documents\Tencent Files\330556994\FileRecv\DX0388-MVC5+EF6+EasyUI后台管理系统源码+文档\trunk\Apps.Jobs\obj\Debug\Apps.Jobs.pdb

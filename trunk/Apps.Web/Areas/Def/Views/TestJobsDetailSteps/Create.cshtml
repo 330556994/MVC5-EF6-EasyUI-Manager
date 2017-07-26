@@ -1,0 +1,93 @@
+﻿@model Apps.Models.DEF.DEF_TestJobsDetailStepsModel
+@using Apps.Common;
+@using Apps.Models.DEF;
+@using Apps.Web.Core;
+@using Apps.Models.Sys;
+@{
+    ViewBag.Title = "创建";
+    Layout = "~/Views/Shared/_Index_LayoutEdit.cshtml";
+    List<permModel> perm = null;
+}
+
+<script type="text/javascript">
+    $(function () {
+        $("#btnSave").click(function () {
+            if ($("form").valid()) {
+                $.ajax({
+                    url: "@Url.Action("Create")",
+                    type: "Post",
+                    data: $("form").serialize(),
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.type == 1) {
+                            $.messageBox5s('@Resource.Tip', data.message);
+                            $("#CreateForm input,#CreateForm textarea").val("");
+                            window.parent.ReloadStepsList("@Model.VerCode", "@Model.Code")
+                    }
+                    else {
+                        window.parent.frameReturnByMes(data.message);
+                    }
+                }
+                });
+        }
+            return false;
+        });
+        $("#btnReturn").click(function () {
+            window.parent.frameReturnByClose();
+        });
+    });
+</script>
+<div class="mvctool bgb">
+    @Html.ToolButton("btnSave", "fa fa-save", Resource.Save, true)
+    @Html.ToolButton("btnReturn", "fa fa-reply", Resource.Reply, false)
+</div>
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(model => model.ItemID)
+    @Html.HiddenFor(model => model.Result)
+    @Html.HiddenFor(model => model.ExSort)
+    @Html.HiddenFor(model => model.StepType)
+    @Html.HiddenFor(model => model.Tester)
+    @Html.HiddenFor(model => model.TestDt)
+    @Html.HiddenFor(model => model.Developer)
+    @Html.HiddenFor(model => model.PlanStartDt)
+    @Html.HiddenFor(model => model.PlanEndDt)
+    @Html.HiddenFor(model => model.FinDt)
+    @Html.HiddenFor(model => model.TestRequestFlag)
+    @Html.HiddenFor(model => model.DevFinFlag)
+    @Html.HiddenFor(model => model.VerCode)
+    @Html.HiddenFor(model => model.Code)
+            @Html.HiddenFor(model => model.ResultContent)
+    <table class="formtable">
+        <tbody>
+            <tr>
+                <th>
+                    @Html.LabelFor(model => model.Title)：
+              </th>
+                <td>
+                    @Html.EditorFor(model => model.Title)
+                @Html.ValidationMessageFor(model => model.Title)</td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.LabelFor(model => model.TestContent)：
+              </th>
+                <td>
+                    @Html.TextAreaFor(model => model.TestContent, new { style = "width:295px; height:225px;" })
+                @Html.ValidationMessageFor(model => model.TestContent)</td>
+            </tr>
+
+            <tr>
+                <th>
+                    @Html.LabelFor(model => model.Sort)：
+             </th>
+                <td>
+                    @Html.EditorFor(model => model.Sort)
+                @Html.ValidationMessageFor(model => model.Sort)</td>
+            </tr>
+
+
+
+        </tbody>
+    </table>
+}

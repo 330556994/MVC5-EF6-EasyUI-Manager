@@ -1,0 +1,316 @@
+﻿@model Apps.Models.DEF.DEF_TestJobsDetailModel
+@using Apps.Models.Sys;
+@using Apps.Common;
+@using Apps.Web.Core;
+@using Apps.Locale;
+@{
+    ViewBag.Title = "任务明细";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+    List<permModel> perm = (List<permModel>)ViewBag.perm;
+    if (perm == null)
+    {
+        perm = new List<permModel>();
+    }
+   
+    
+}
+<script src="@Url.Content("~/Scripts/def_tools.js")" type="text/javascript"></script>
+<div class="mvctool">
+    <input id="txtQuery" type="text" class="searchText" />
+    @*操作*@
+    @Html.ToolButton("btnQuery", "fa fa-search", Resource.Query,ref perm, "Query", true)
+    @Html.ToolButton("btnCreate", "fa fa-plus", "新增测试用例",ref perm, "Create", true)
+    @Html.ToolButton("btnCreateTestJobs", "fa fa-arrow-right", "生成测试项目", false)
+</div>
+@Html.Partial("~/Views/Shared/_DEF_ComboGrid.cshtml")
+<table>
+    <tr>
+        <td style="vertical-align: top">
+            <table id="List">
+            </table>
+           
+                    <div class="gray pt5">
+                        主用例说明：
+                    </div>
+                    <div>
+                        <div id="Description" style="width: 400px; height: 100px; border: 1px #ccc solid; margin-top: 5px; padding: 5px; overflow: auto">
+                            点击行可以查看用例的说明！
+                        </div>
+                    </div>
+          
+        </td>
+        <td style="width: 5px;">&nbsp;</td>
+        <td style="vertical-align: top; width: 600px">
+            <table id="RelationList"></table>
+              <div class="gray pt5">
+                        子用例说明：
+                    </div>
+                    <div>
+                        <div id="DescriptionC" style="width: 400px; height: 100px; border: 1px #ccc solid; margin-top: 5px; padding: 5px; overflow: auto">
+                            点击行可以查看用例的说明！
+                        </div>
+                    </div>
+        </td>
+    </tr>
+</table>
+<!--内嵌窗口-->
+<div id="modalwindow" class="easyui-window" data-options="modal:true,closed:true,minimizable:false,shadow:false"></div>
+<!--测试明细-->
+<script type="text/javascript">
+    //删除
+    function Delete(id) {
+        $.messager.confirm('@Resource.Tip', '要删除测试明细', function (r) {
+            if (r) {
+                var rowData = jQuery("#List").jqGrid('getRowData', id);
+                $.ajax({
+                    url: "/Def/TestJobsDetail/Delete",
+                    type: "Post",
+                    data: { "vercode": rowData.VerCode, "code": rowData.Code }, //{a:aValue,b:bValue}
+                    dataType: "json",
+                    success: function (data) {
+                        //刷新
+                        jQuery("#List").trigger("reloadGrid");
+                        $.messageBox5s('@Resource.Tip', data.message);
+                    }
+                });
+            }
+        });
+
+    };    //修改
+    function Edit(id) {
+        var rowData = jQuery("#List").jqGrid('getRowData', id);
+        editor1.html(rowData.Description);
+        jQuery("#List").jqGrid('editRow', id);
+    };    //修改排序
+    function UpdateSort(id) {
+        var Description = editor1.html();
+        if (Description.length > 2000) {
+            $.messageBox5s('@Resource.Tip', '测试内容总字数超过最大值2000个字,如果有图片请用图片上传不要粘贴图片');
+            return;
+        }
+        var rowData = jQuery("#List").jqGrid('getRowData', id);
+        jQuery("#List").jqGrid('saveRow', id, function (data) {
+            //var jsMessage = new JsonMessage(data);
+            $.messageBox5s('@Resource.Tip', '保存成功');
+            return true;
+        });
+        //显示jqGrid信息窗口
+        jgAst.ShowInfoDialog();
+    };
+    //取消
+    function Cancel(id) {
+        jQuery("#List").jqGrid('restoreRow', id);
+    };
+    //删除Relation
+    function RelationDelete(id) {
+        var rowData = jQuery("#RelationList").jqGrid('getRowData', id);
+        $.ajax({
+            url: "/Def/TestJobsDetail/DeleteRelation",
+            type: "Post",
+            data: { "vercode": rowData.VerCode, "pcode": rowData.PCode, "ccode": rowData.CCode }, //{a:aValue,b:bValue}
+            dataType: "json",
+            success: function (data) {
+                //刷新
+                jQuery("#RelationList").trigger("reloadGrid");
+                $.messageBox5s('@Resource.Tip', data.message);
+            }
+        });
+    };
+    //修改Relation的排序
+    function RelationUpdateSort(id) {
+        var rowData = jQuery("#RelationList").jqGrid('getRowData', id);
+        jQuery("#RelationList").jqGrid('saveRow', id, function (data) {
+            // var jsMessage = new JsonMessage(data); jsMessage.message
+            $.messageBox5s('@Resource.Tip', '保存成功');
+            return true;
+        });
+    };
+    //取消Relation
+    function RelationCancel(id) {
+        jQuery("#RelationList").jqGrid('restoreRow', id);
+    };
+   
+    //新增子用例后返回
+    function ReturnCreateSubCase() {
+        jQuery("#RelationList").trigger("reloadGrid")
+    }
+    //新增后返回
+    function ReturnCreate() {
+        jQuery("#List").trigger("reloadGrid");
+    }
+    //内嵌窗口关闭
+    function ReturnCloseDialog() {
+        $("#dailydeal").dialog("close");
+    }
+    $(function () {
+        //用例定义
+        $("#btnCreateTestCase").click(function () {
+            window.parent.addTab("用例定义", "/def/testcase", "");
+        });
+        //新增
+        $("#btnCreate").click(function () {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择测试任务!');
+                return;
+            }
+            if ($("#testflag").val() == 1) {
+                $.messageBox5s('@Resource.Tip', '已进行测试，不能新增测试用例!');
+                return;
+            }
+            $("#modalwindow").html("<iframe width='100%' height='100%' scrolling='no' frameborder='0'' src='/Def/TestJobsDetail/Create?vercode=" + vercode + "'></iframe>");
+            $("#modalwindow").window({ title: '@Resource.Create', width: 480, height: 400, iconCls: 'fa fa-plus' }).window('open');
+
+        });
+        //添加子用例
+        $("#btnCreateSubCase").click(function () {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择测试任务!');
+                return;
+            }
+            if ($("#testflag").val() == 1) {
+                $.messageBox5s('@Resource.Tip', '已进行测试，不能新增测试用例!');
+                return;
+            }
+            var id = jQuery("#List").jqGrid('getGridParam', 'selrow');
+            if (id == null) {
+                $.messageBox5s('@Resource.Tip', '请选择用例!');
+                return;
+            }
+            var rowData = jQuery("#List").jqGrid('getRowData', id); $("#dailydeal").html(' <iframe src="/Def/TestJobsDetail/CreateRelation?vercode=' + vercode + '&code=' + rowData.Code + '" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+            $("#dailydeal").dialog({ width: 550, height: 460, title: "新增", modal: true });
+        });
+
+        //返回列表
+        $("#btnReturn").click(function () {
+            //window.close();
+            var temps = "0";
+            returnParent(temps);
+        });
+        //查询
+        $("#btnSearch").click(function () {
+            var queryStr = $("#txtQuery").val();
+            //如果查询条件为空默认查询全部
+            if (queryStr == null) {
+                queryStr = "%";
+            }
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '测试任务无效!');
+                return;
+            }
+            //提交查询
+            queryStr = encodeURI(queryStr);
+            jQuery("#List").jqGrid('setGridParam', { url: '/Def/TestJobsDetail/GetList?querystr=' + queryStr + "&vercode=" + vercode, page: 1 }).trigger("reloadGrid");
+            jQuery("#RelationList").jqGrid('clearGridData');
+        });
+        //刷新
+        $("#btnRefresh").click(function () {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择测试任务!');
+                return;
+            }
+            jQuery("#List").jqGrid('setGridParam', { url: "/Def/TestJobsDetail/GetList?vercode=" + vercode, page: 1 }).trigger("reloadGrid");
+            jQuery("#RelationList").jqGrid('clearGridData');
+        });
+        //生成测试项目
+        $("#btnCreateTestJobs").click(function () {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择测试任务!');
+                return;
+            }
+            $.ajax({
+                url: "/Def/TestJobsDetail/CreateTestJobs",
+                type: "Post",
+                data: { "vercode": vercode }, //{a:aValue,b:bValue}
+                dataType: "json",
+                success: function (data) {
+                    //刷新
+
+                    $.messageBox5s('@Resource.Tip', data.message);
+                }
+            });
+        });
+
+        $('#List').datagrid({
+            url: '/Def/TestJobsDetail/GetList?vercode=@ViewBag.vercode',
+            width: 600,
+            methord: 'post',
+            height: SetGridHeightSub(220),
+            fitColumns: true,
+            sortName: 'Sort',
+            sortOrder: 'asc',
+            idField: 'Id',
+            pageSize: 15,
+            pageList: [15, 20, 30, 40, 50],
+            pagination: true,
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            //rownumbers: true,//行号
+            columns: [[
+                { field: 'Id', title: '@Resource.TitleID', width: 80, hidden: true, sortable: true },
+                { field: 'VerCode', title: '版本号', width: 80, sortable: true, hidden: true },
+                { field: 'Code', title: '主用例编码', width: 80, sortable: true },
+                { field: 'Name', title: '主用例名称', width: 80, sortable: true },
+                { field: 'Description', title: '@Resource.TitleRemark', width: 80, sortable: true,hidden:true },
+                { field: 'Result', title: '测试结果', width: 80, sortable: true },
+                { field: 'Sort', title: '@Resource.TitleSort', width: 80, sortable: true }
+            ]],
+            onClickRow: function (index, data) {
+                var row = $('#List').datagrid('getSelected');
+                $("#Description").html(row.Description);
+                $("#DescriptionC").html("点击行可以查看用例的说明！");
+                var vercode = $("#vercode").val();
+                $("#RelationList").datagrid("load", { vercode: vercode, code: row.Code });
+            }
+        });
+
+        $('#RelationList').datagrid({
+            url: '/Def/TestJobsDetailRelation/GetListByCode',
+            width: SetGridWidthSub(615),
+            methord: 'post',
+            height: SetGridHeightSub(220),
+            fitColumns: true,
+            sortName: 'Sort',
+            sortOrder: 'asc',
+            idField: 'Id',
+            pageSize: 15,
+            pageList: [15, 20, 30, 40, 50],
+            pagination: true,
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            //rownumbers: true,//行号
+            columns: [[
+                { field: 'Id', title: '@Resource.TitleID', width: 80, hidden: true, sortable: true },
+                { field: 'VerCode', title: '版本号', width: 80, sortable: true, hidden: true },
+                { field: 'PCode', title: '主用例编码', width: 80, sortable: true },
+                { field: 'CCode', title: '子用例编码', width: 80, sortable: true },
+                { field: 'Name', title: '子用例名称', width: 80, sortable: true },
+                { field: 'Description', title: '@Resource.TitleRemark', width: 80, sortable: true, hidden: true },
+                { field: 'Result', title: '测试结果', width: 80, sortable: true },
+                { field: 'Sort', title: '@Resource.TitleSort', width: 80, sortable: true },
+                { field: 'ExSort', title: '执行顺序', width: 80, sortable: true }
+            ]],
+            onClickRow: function (index, data) {
+                var row = $('#RelationList').datagrid('getSelected');
+                $("#DescriptionC").html(row.Description);
+            }
+        });
+        $(window).resize(function () {
+            $('#List').datagrid('resize', {
+                height: SetGridHeightSub(220),
+            });
+            $('#RelationList').datagrid('resize', {
+                height: SetGridHeightSub(220),
+                width: SetGridWidthSub(615),
+            });
+        });
+    });
+    //新增用例关系后刷新
+    function ReloadList(code) {
+        $("#List").datagrid("load", { vercode: code });
+    }
+</script>

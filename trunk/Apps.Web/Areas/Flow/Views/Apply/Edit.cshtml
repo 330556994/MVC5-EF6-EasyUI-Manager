@@ -1,0 +1,95 @@
+﻿@model Apps.Models.Flow.Flow_FormContentModel
+@using Apps.Common;
+@using Apps.Models.Flow;
+@using Apps.Web.Core;
+@using Apps.Models.Sys;
+@using Apps.Locale;
+@{
+    ViewBag.Title = "创建";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+    List<permModel> perm = null;
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script src="~/Scripts/jquery.jqprint-0.3.js"></script>
+<script language="javascript">
+    $(function(){
+        $("#btnPrint").click(function () {
+            $("#setFormLayout").jqprint();
+        });
+    });
+</script>
+<div class="mvctool bgb">
+    @Html.ToolButton("btnPrint", "fa fa-print", "打印", false)
+</div>
+<script>
+        $(function () {
+            $("*[name='AttrA']").replaceWith("@Model.AttrA");
+            $("*[name='AttrB']").replaceWith("@Model.AttrB");
+            $("*[name='AttrC']").replaceWith("@Model.AttrC");
+            $("*[name='AttrD']").replaceWith("@Model.AttrD");
+            $("*[name='AttrE']").replaceWith("@Model.AttrE");
+            $("*[name='AttrF']").replaceWith("@Model.AttrF");
+            $("*[name='AttrG']").replaceWith("@Model.AttrG");
+            $("*[name='AttrH']").replaceWith("@Model.AttrH");
+            $("*[name='AttrI']").replaceWith("@Model.AttrI");
+            $("*[name='AttrJ']").replaceWith("@Model.AttrJ");
+            $("*[name='AttrK']").replaceWith("@Model.AttrK");
+            $("*[name='AttrL']").replaceWith("@Model.AttrL");
+            $("*[name='AttrM']").replaceWith("@Model.AttrM");
+            $("*[name='AttrN']").replaceWith("@Model.AttrN");
+            $("*[name='AttrO']").replaceWith("@Model.AttrO");
+            $("*[name='AttrP']").replaceWith("@Model.AttrP");
+            $("*[name='AttrQ']").replaceWith("@Model.AttrQ");
+            $("*[name='AttrR']").replaceWith("@Model.AttrR");
+            $("*[name='AttrS']").replaceWith("@Model.AttrS");
+            $("*[name='AttrT']").replaceWith("@Model.AttrT");
+            $("*[name='AttrU']").replaceWith("@Model.AttrU");
+            $("*[name='AttrV']").replaceWith("@Model.AttrV");
+            $("*[name='AttrW']").replaceWith("@Model.AttrW");
+            $("*[name='AttrX']").replaceWith("@Model.AttrX");
+            $("*[name='AttrY']").replaceWith("@Model.AttrY");
+            $("*[name='AttrZ']").replaceWith("@Model.AttrZ");
+
+            //获得最低的input对于整个高层的高度
+            var maxTop = new Array();
+            var topValue = 0;
+            var topValueHeight = 0;
+            $(".easyui-draggable").each(function (i) {
+                var currentValue = parseInt($(this).css("top").replace("px", ""));
+                maxTop.push(currentValue);
+                if (currentValue >= Math.max.apply(Math, maxTop)) {
+                    topValueHeight = $(this).height();
+                }
+            });
+            topValue = Math.max.apply(Math, maxTop);
+            //设置高度来改变美观度
+            $("#setFormLayout").height(topValue + topValueHeight + 20);
+            $('.easyui-draggable').draggable("disable");
+
+        });
+</script>
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.FormId)
+@Html.HiddenFor(model => model.UserId)
+@Html.HiddenFor(model => model.Title)
+<input id="CreateTime" type="hidden" name="CreateTime" value="2000-1-1" />
+<div id="setFormLayout" class="easyui-panel">
+    @Html.Raw(ViewBag.Html)
+</div>
+<table class="formtable">
+    <tbody>
+        <tr>
+            <th>
+                @Html.LabelFor(model => model.TimeOut)：
+            </th>
+            <td>
+                @Html.EditorFor(model => model.TimeOut)
+            </td>
+        </tr>
+        <tr><td style='width:100px; text-align:right;'>紧急程度 :</td><td><select name="FormLevel" id="FormLevel"><option value="普通">普通</option><option value="重要">重要</option><option value="紧急">紧急</option></select></td></tr>
+    </tbody>
+</table>
+<hr />
+<table class="formtablenormal">
+    @Html.Raw(ViewBag.StepCheckMes)
+</table>

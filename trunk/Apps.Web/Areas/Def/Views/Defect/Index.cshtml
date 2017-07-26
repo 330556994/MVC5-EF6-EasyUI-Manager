@@ -1,0 +1,883 @@
+﻿@model Apps.Models.DEF.DEF_DefectModel
+@using System.Globalization;
+@using Apps.Models.Sys;
+@using Apps.Common;
+@using Apps.Web.Core;
+@using Apps.Locale;
+@{
+    ViewBag.Title = "缺陷报告";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+    List<permModel> perm = (List<permModel>)ViewBag.perm;
+    if (perm == null)
+    {
+        perm = new List<permModel>();
+    }
+   
+}
+<script src="@Url.Content("~/Scripts/kindeditor/kindeditor-min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/def_tools.js")" type="text/javascript"></script>
+<div class="mvctool">
+    <input id="txtQuery" type="text" class="searchText" />
+    @*操作*@
+    @Html.ToolButton("btnQuery", "fa fa-search", Resource.Query,ref perm, "Query", true)
+    @Html.ToolButton("btnSearchByExecutor", "fa fa-search", "按执行人查询",ref perm, "Query", true)
+    @Html.ToolButton("btnQueryAll", "fa fa-search", "全能查询",ref perm, "Query", true)
+    @Html.ToolButton("btnCheckAll", "fa fa-check", "审核全部记录", true)
+    @Html.ToolButton("btnCreateDefect", "fa fa-plus", "新增缺陷", true)
+    @Html.ToolButton("btnPrint", "fa fa-external-link", "导出", true)
+    @Html.ToolButton("btnGetDefect", "fa fa-list", "提取数据", true)
+    @Html.ToolButton("btnAllSet", "fa fa-cog", "设置执行人及时间", true)
+</div>
+    @Html.Partial("~/Views/Shared/_DEF_ComboGrid.cshtml")
+<div style="margin-bottom:5px;">
+    <table id="List">
+    </table>
+</div>
+<div>
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true) 
+        <div id="tt" class="easyui-tabs" style="height: 230px;">
+            <div title="测试步骤" data-options="tools:'#p-tools'" style="padding: 5px;">
+                <table class="wid100f">
+                    <tr>
+                        <td style="width: 50%; padding-right: 5px; vertical-align:top">
+                            @Html.LabelFor(model => model.TestContent)
+                            <div id="TestContentTitle" style="width: 100%; border: 1px #ccc solid; height: 150px;">
+                            </div>
+                        </td>
+                        <td>
+                            @Html.LabelFor(model => model.ResultContent)
+                            <textarea id="ResultContentTitle" cols="100" rows="8" style="height: 150px; visibility: hidden;"></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div title="填写备注" style="overflow: auto; padding: 20px;">
+                <div class="fl" style="width: 600px;">
+                    <div class="clear editor-field" style="padding-left: 0">
+                        <textarea id="ABody" cols="100" rows="8" style="width: 100%; height: 170px; visibility: hidden;"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mvctool" style="padding: 5px;">
+            <div class="fl but-row">
+                <a id="btnFirstRow" href="#" title="第一行"><span class="arrow-first"></span></a><a
+                    id="btnPriorRow" href="#" title="上一行"><span class="arrow-pre"></span></a><a id="btnNextRow"
+                        href="#" title="下一行"><span class="arrow-next"></span></a><a id="btnLastRow" href="#"
+                            title="最后一行"><span class="arrow-last"></span></a><span>错误级别：</span>
+                <select id="selErrorLevel" class="wid80 mr5">
+                    <option value="0">0不处理</option>
+                    <option value="1" selected="selected">1.普通</option>
+                    <option value="2">2.异常</option>
+                    <option value="3">3.严重</option>
+                    <option value="4">4.严重+</option>
+                    <option value="5">5.严重++</option>
+                </select>
+            </div>
+            @Html.ToolButton("btnSetErrorLevel", "fa fa-arrow-right", "确定", true)
+            @Html.ToolButton("btnCloseDefect", "fa fa-check", "审核", true)
+            @Html.ToolButton("btnCancelCloseDefect", "fa-uncheck", "反审核", true)
+            @Html.ToolButton("btnProcessOK", "fa fa-check", "已处理", true)
+            @Html.ToolButton("btnProcessNo", "fa-uncheck", "未处理", true)
+            @Html.ToolButton("btnSave", "fa fa-save", Resource.Save, true)
+            @Html.ToolButton("btnSend", "fa fa-send", "发送消息", true)
+            @Html.ToolButton("btnOpenTestContent", "fa fa-file-text-o", "显示测试内容", false)
+        </div>
+        @Html.HiddenFor(model => model.ItemID)
+        @Html.HiddenFor(model => model.VerCode)
+        @Html.HiddenFor(model => model.Code)        
+        @Html.HiddenFor(model => model.TestContent)
+        @Html.HiddenFor(model => model.ResultContent)
+        @Html.HiddenFor(model => model.Creator)
+        @Html.HiddenFor(model => model.CrtDt)
+        @Html.HiddenFor(model => model.Remark)
+        @Html.HiddenFor(model => model.Receiver)
+        @Html.HiddenFor(model => model.SendDt)
+        @Html.HiddenFor(model => model.CloseState)
+        @Html.HiddenFor(model => model.Closer)
+        @Html.HiddenFor(model => model.CloseDt)
+   
+    }
+</div>
+<div id="modalwindow" class="easyui-window" data-options="modal:true,closed:true,minimizable:false,shadow:false"></div>
+
+<div id="dailydeal2" style="padding: 0; display: none">
+    <div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CaseName)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.CaseName)
+            @Html.ValidationMessageFor(model => model.CaseName)
+        </div>
+        <div class="editor-label" style="width: 120px">
+            步骤/缺陷名称
+        </div>
+        <div class="editor-field" style="width: 500px">
+            @Html.EditorFor(model => model.Title)
+            @Html.ValidationMessageFor(model => model.Title)
+        </div>
+        <div class="editor-label">
+            <span id="ProcessTitle"></span>
+        </div>
+    </div>
+    <div class="box-line-gray mt5" id="ResultContentTitle2" style="width: 98%; height: 92%;">
+    </div>
+</div>
+<script type="text/javascript">    //缺陷报告类
+    function Defect() {
+        //property
+        this.curId = null; //当前行
+        this.MAXLENGTH = 8000;
+        //function
+        if (typeof Defect._initialized == "undefined") {
+            Defect._initialized = true;
+            //////////////////////////////////////
+            Defect.prototype.About = function () {
+                $.messageBox5s('@Resource.Tip', 'Defect 1.0');
+            };            //设置关闭状态
+            Defect.prototype.SetCloseState = function (closestate) {
+                var row = $('#List').datagrid('getSelected');
+                if (row == null) {
+                    $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords');
+                    return;
+                }
+                //
+                $.ajax({
+                    url: "/def/Defect/SetDefectCloseState",
+                    type: "Post",
+                    data: { ids: "" + row.Id+ "", "closeState": closestate },
+                    dataType: "json",
+                    success: function (data) {
+                        $.messageBox5s('@Resource.Tip', data.message);
+                    }
+                });
+                //刷新数据
+                $("#List").datagrid('load');
+            };
+            //设置处理状态
+            Defect.prototype.SetProcessState = function (state) {
+                var row = $('#List').datagrid('getSelected');
+                if (row == null) {
+                    $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords');
+                     return;
+                 }
+                 //
+                 $.ajax({
+                     url: "/def/Defect/SetProcessState",
+                     type: "Post",
+                     data: { ids: "" + row.Id + "", "state": state },
+                     dataType: "json",
+                     success: function (data) {
+                         $.messageBox5s('@Resource.Tip', data.message);
+                     }
+                 });
+                 //刷新数据
+                 $("#List").datagrid('load');
+             };
+            //提取缺陷数据
+            Defect.prototype.GetDefect = function () {
+
+                var rows = $("#List").datagrid("getRows"); //这段代码是获取当前页的所有行。
+                if (rows.length < 1)
+                {
+                    $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords');
+                    return;
+                }
+                
+                    var datelist = "<p>&nbsp;版本：" + $("#vercode").val() + "</p><table style='width:100%'><tr><td style='border:1px #ccc solid;text-align:center;font-weight:bold'>用例名称</td><td style='border:1px #ccc solid;text-align:center;font-weight:bold'>步骤缺陷名称</td><td style='border:1px #ccc solid;text-align:center;font-weight:bold'>测试人</td></tr>";
+                    for (var i = 0; i < rows.length; i++) {//获取每一行的数据alert(rows[i].id);//假设有id这个字段
+                        datelist = datelist + "<tr><td style='border:1px #ccc solid'>" + rows[i].CaseName + "</td><td style='border:1px #ccc solid'>" + rows[i].Title + "</td><td style='border:1px #ccc solid'>" + rows[i].Creator + "</td></tr>";
+                    }
+
+                    $("#modalwindow").html(datelist + "</table>");
+                    $("#modalwindow").window({ width: 800, height: 450, title: "提取记录", modal: true }).window('open');
+            };
+            //设置错误级别
+            Defect.prototype.SetErrorLevel = function (errorlevel) {
+                var row = $('#List').datagrid('getSelected');
+                if (row == null) {
+                    $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords');
+                    return;
+                }
+                //
+                $.ajax({
+                    url: "/def/Defect/SetErrorLevel",
+                    type: "Post",
+                    data: { ids: "" + row.Id + "", "errorlevel": errorlevel },
+                    dataType: "json",
+                    success: function (data) {
+                        $.messageBox5s('@Resource.Tip', data.message);
+                    }
+                });
+                //刷新数据
+                $("#List").datagrid('load');
+            };
+            
+            //保存
+            Defect.prototype.Save = function () {
+                var row = $('#List').datagrid('getSelected');
+                if (row == null) {
+                    $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords');
+                    return;
+                }
+                var remark = editor1.html();
+                if (remark != null) {
+                    if (remark.length > this.MAXLENGTH) {
+                        $.messageBox5s('@Resource.Tip', "备注内容不能超过" + MAXLENGTH + "个字");
+                        return;
+                    }
+                }
+                $.ajax({
+                    url: "/Def/Defect/UpdateRemark",
+                    type: "Post",
+                    data: { id: row.Id, remark: remark },
+                    dataType: "json",
+                    success: function (data) {
+                        $.messageBox5s('@Resource.Tip', data.message);
+                    }
+                });                //刷新数据
+                $("#List").datagrid('load');
+            };
+            //测试编辑区
+            Defect.prototype.ClearForm = function () {
+                $("#ItemID").val("");
+                $("#VerCode").val("");
+                $("#Code").val("");
+                $("#Title").val("");
+                $("#Creator").val("");
+                $("#CrtDt").val("");
+                $("#Receiver").val("");
+                $("#SendDt").val("");
+                $("#CloseState").val("");
+                $("#Closer").val("");
+                $("#CloseDt").val("");
+                $("#TestContent").val("");
+                $("#ResultContent").val("");
+                $("#Remark").val("");
+                $("#TestContentTitle").html("");
+                editor1.html("");
+                editor2.html("");
+            };
+            //审核所有记录
+            Defect.prototype.CheckAll = function () {
+                var vercode = $("#vercode").val();
+
+                if (vercode == null) {
+                    $.messageBox5s('@Resource.Tip', '版本号不能为空');
+                    return;
+                }
+
+                $.ajax({
+                    url: "/Def/Defect/CheckAll",
+                    type: "Post",
+                    data: { vercode: vercode },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.type == 0) {
+                            $.messageBox5s('@Resource.Tip', data.message);
+                        }
+
+                    }
+                });
+
+                //刷新数据
+                this.curId = null;
+                $("#List").datagrid('load');
+
+            };
+
+
+            //批量设置计划开始时间
+            //批量设置计划结束时间
+            //批量分配任务
+            Defect.prototype.AllSet = function (begintime, endtime, member) {
+                var row = $('#List').datagrid('getSelected');
+                if (row == null) {
+                    $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords');
+                    return;
+                }
+                $.post("/def/Defect/AllSet", { "ids": "" + row.Id + "", "begintime": begintime, "endtime": endtime, "member": member },
+                    function (data) {
+                        $.messageBox5s('@Resource.Tip', data.message);
+                        $("#List").datagrid('load');
+                    }, "json");
+
+            };
+        }
+    }
+    //全局状态
+    var def = new Defect();
+    var editor1;
+    var editor2;
+    KindEditor.ready(function (K) {
+        editor1 = K.create('#ABody', {
+            uploadJson: '/Resources/kindeditor/asp.net/upload_json.ashx',
+            fileManagerJson: '/Resources/kindeditor/asp.net/file_manager_json.ashx',
+            allowFileManager: false,
+            newlineTag: 'br',
+            items: ['undo', 'redo', '|', 'bold', 'italic', 'underline', 'image', 'fontname', 'fontsize', 'forecolor', 'hilitecolor', 'link', 'unlink', 'fullscreen', 'insertfile']
+        });
+
+        editor2 = K.create('#ResultContentTitle', {
+            uploadJson: '/Resources/kindeditor/asp.net/upload_json.ashx',
+            fileManagerJson: '/Resources/kindeditor/asp.net/file_manager_json.ashx',
+            allowFileManager: false,
+            newlineTag: 'br',
+            items: ['undo', 'redo', '|', 'bold', 'italic', 'underline', 'image', 'fontname', 'fontsize', 'forecolor', 'hilitecolor', 'link', 'unlink', 'fullscreen', 'insertfile']
+        });
+    });
+    
+
+    function ReturnCreate() {
+        $("#List").datagrid('load');
+    }
+    //用户返回
+    function ReturnSelectUser(id, val, name) {
+        if (val == null || val == "") {
+            return;
+        }
+        if (id == 1) {
+            $.ajax({
+                url: "/Def/Defect/UpdateExecutor",
+                type: "Post",
+                data: { id: def.curId, executor: val },
+                dataType: "json",
+                success: function (data) {
+                    $.messageBox5s('@Resource.Tip', data.message);
+                }
+            });
+            $("#List").datagrid('load');
+        }
+        else if (id == 2) {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择版本!');
+
+                return;
+            }
+            //提交查询
+            val = encodeURI(val);
+            $("#List").datagrid('load', '/Def/Defect/GetList?querystr=' + val + "&vercode=" + vercode);
+        } else if (id == 3) {
+            $("#Set_Member").val(name);
+            $("#Set_MemberId").val(val);
+        }
+    }
+
+    //内嵌窗口关闭
+    function ReturnCloseDialog() {
+        $("#dailydeal").dialog("close");
+    }
+    //修改
+    function Edit(id) {
+        var rowData = jQuery("#List").jqGrid('getRowData', id);
+        jQuery("#List").jqGrid('editRow', id, true, pickdates);
+    };
+    function Save(id) {
+        var rowData = jQuery("#List").jqGrid('getRowData', id);
+        jQuery("#List").jqGrid('saveRow', id, function (data) {
+            // var jsMessage = new JsonMessage(data);
+            $.messageBox5s('@Resource.Tip', '保存成功');
+            return true;
+        });
+        //显示jqGrid信息窗口
+        jgAst.ShowInfoDialog();
+        //刷新数据
+        $("#List").datagrid('load');
+    };
+    //删除步骤
+    function delrow(index) {
+        $('#List').datagrid('selectRow', index);
+        var row = $('#List').datagrid('getSelected');
+        if (row != null) {
+            $.messager.confirm('@Resource.Tip', '要删除选择的缺陷记录?', function (r) {
+                if (r) {
+                    $.ajax({
+                        url: "/Def/Test/Delete",
+                        type: "Post",
+                        data: row, //{a:aValue,b:bValue}
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.type == 1) {
+                                $("#List").datagrid("load");
+                            }
+                            $.messageBox5s('@Resource.Tip', data.message);
+                        }
+                    });
+                }
+            });
+        } else { $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords'); }
+    }
+
+    function pickdates(id) {
+        jQuery("#" + id + "_PStartDt", "#List").datepicker({ dateFormat: "yy-mm-dd" });
+        jQuery("#" + id + "_PEndDt", "#List").datepicker({ dateFormat: "yy-mm-dd" });
+    }
+    //取消
+    function Cancel(id) {
+        jQuery("#List").jqGrid('restoreRow', id);
+    };
+    //删除
+    function Delete(id) {
+        var rowData = jQuery("#List").jqGrid('getRowData', id);
+        if (rowData.CloseState == "True") {
+            $.messageBox5s('@Resource.Tip', '记录已审核，不能删除!');
+
+            return;
+        }
+        if (!confirm("确认删除记录?")) {
+            return;
+        }
+        $.ajax({
+            url: "/Def/Test/Delete",
+            type: "Post",
+            data: { itemid: rowData.ItemID, vercode: rowData.VerCode, code: rowData.Code },
+            dataType: "json",
+            success: function (data) {
+                //刷新
+                $("#List").datagrid('load');
+                $.messageBox5s('@Resource.Tip', data.message);
+            }
+        });
+    };
+    function SelExcutor(id) {
+        if (def.curId == null) {
+            $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords');
+            return;
+        }
+        $("#dailydeal").html(' <iframe src=/sysuser/lookup?owner=1" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>'); $("#dailydeal").dialog({ width: 380, height: 440, title: "用户", modal: true });
+    }
+    //全能查询
+    function ReturnQueryAll(sql) {
+        if (sql == null || sql == "undefined" || sql == "") {
+            ReturnCloseDialog();
+            return;
+        }
+        var vercode = $("#vercode").val();
+        if (vercode == null || vercode == "") {
+            $.messageBox5s('@Resource.Tip', '请选择版本!');
+            return;
+        }
+        $("#List").datagrid('load', "/Def/Defect/Query?vercode=" + vercode + "&sql=" + sql);
+        //jQuery("#List").jqGrid('setGridParam', { url: "/Def/Defect/Query?vercode=" + vercode, page: 1, postData: { sql: sql } }).trigger("reloadGrid");
+        ReturnCloseDialog();
+    }
+    function InitQueryAll() {
+        var value = new Array(
+            'Code,用例名称,t,like,1,select Code from def_testcase where Code +name like '
+            , 'Title,步骤/缺陷名称,t,like,0,0'
+            , 'Creator,测试人,t,like,1,select id from view_user where id +name like '
+            , 'CloseState,审核[取值:0或1],n,eq,0,0'
+            , 'Processor,处理人,t,like,1,select id from view_user where id +name like '
+            , 'ProcessState,处理状态[取值:0或1],n,eq,0,0'
+            , 'ErrorLevel,错误级别,n,eq,0,0'
+            , 'Complex,复杂度,n,eq,0,0'
+            , 'Executor,执行人,t,like,1,select id from view_user where id +name like '
+            , 'PEndDt,计划完成,d,bt,0,0'
+            );
+        return value;
+    }
+    $(function () {
+        // Tabs
+        $('#tabs').tabs();
+        //过滤按钮
+        $("#Sel_Ok,#Sel_No").click(function () {
+            $("#cuName").html("");
+            jQuery("#List").jqGrid('setGridParam',
+                { url: '/Def/Defect/GetListByVerCode3?ok=' + $("#Sel_Ok").prop("checked") + '&no=' + $("#Sel_No").prop("checked") + '&vercode=' + $("#vercode").val(), page: 1 }
+            ).trigger("reloadGrid");
+        });
+        //初始化
+        function initPage() {
+            var vercode = "@ViewBag.vercode";
+            var name = "@ViewBag.name"; $("#vercode").val(vercode);
+            $("#name").val(name);
+        }
+        initPage();
+        //显示测试内容
+        $("#btnOpenTestContent").click(function () {
+            var width = $(window).width() - 12;
+            var height = $(window).height() - 40;
+            try {
+                var isOpen = $("#dailydeal2").dialog("isOpen");
+                if (isOpen == false || isOpen == null || isOpen == undefined) {
+                    $("#dailydeal2").dialog({ width: width, height: height, position: [0, 0], title: "测试内容", modal: false });
+                } else {
+                    $("#dailydeal2").dialog("close");
+                }
+            } catch (err) {
+                $("#dailydeal2").dialog({ width: width, height: height, position: [0, 0], title: "测试内容", modal: false });
+            }
+        });
+        //全能查询
+        $("#btnQueryAll").click(function () {
+            $("#dailydeal").html(' <iframe src=/SysHelper/Query" width="100%"  height="98%" scrolling="no" frameborder="0"  ></iframe>');
+            $("#dailydeal").dialog({ width: 440, height: 370, title: "全能查询", modal: true });
+        });
+        //新增缺陷
+        $("#btnCreateDefect").click(function () {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择测试任务!');
+                return;
+            }
+            $("#modalwindow").html(' <iframe src="/Def/TestJobsDetailSteps/CreateDefect?vercode=' + vercode + '" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+            $("#modalwindow").window({ width: 800, height: 450, title: "新增缺陷记录", modal: true }).window('open');
+        });
+        //关闭缺陷记录
+        $("#btnCloseDefect").click(function () {
+            def.SetCloseState(true);
+        });
+        //取消关闭缺陷记录
+        $("#btnCancelCloseDefect").click(function () {
+            def.SetCloseState(false);
+        });
+        //提取缺陷记录
+        $("#btnGetDefect").click(function () {
+            def.GetDefect();
+        });
+        //设置处理状态
+        $("#btnProcessOK").click(function () {
+            def.SetProcessState(true);
+        });
+        //取消处理状态
+        $("#btnProcessNo").click(function () {
+            def.SetProcessState(false);
+        });
+        //设置错误级别
+        $("#btnSetErrorLevel").click(function () {
+            var level = $("#selErrorLevel").val(); def.SetErrorLevel(level);
+        });
+        //保存
+        $("#btnSave").click(function () {
+            def.Save();
+        });
+        //审核所有记录
+        $("#btnCheckAll").click(function () {
+            def.CheckAll();
+        });
+        //批量设置计划开始时间
+        //批量设置计划结束时间
+        //批量分配任务
+        $("#btnAllSet").click(function () {
+            var row = $('#List').datagrid('getSelected');
+            if (row == null) {
+                $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords');
+                return;
+            }
+            $("#dailydeal3").html("<div style='padding:10px;'>开始时间：<input id='SetPlanBeginTime_Time' class='Wdate' onclick='WdatePicker()' value='" + new Date().getFullYear() + "-" + new Date().getMonth() + 1 + "-" + new Date().getDate() + "'></div><div style='padding:10px;'>完成时间：<input id='SetPlanEndTime_Time' class='Wdate' onclick='WdatePicker()' value='" + new Date().getFullYear() + "-" + new Date().getMonth() + 1 + "-" + new Date().getDate() + "'></div><div style='padding:10px;'>执行人员：<input id='Set_Member' type='text' disabled='disabled' value=''><input id='Set_MemberId' type='hidden' value=''><a id='Sel_Member' href='javascript:void(0)''>选择</a></div><div style='padding-left:70px;'><input id='Set_OK' type='button' value='提交'></div>");
+            $("#dailydeal3").dialog({
+                height: 200, width: 300,
+                title: "批量设置",
+                modal: true
+            });
+            $("#Set_OK").unbind().click(function () {
+                $.messager.confirm('@Resource.Tip', '没有填写的被重设为空！确定？', function (r) {
+                    if (r) {
+                        if ($("#SetPlanBeginTime_Time").val() != "") {
+                            if (!isDate_yyyyMMdd($("#SetPlanBeginTime_Time").val())) {
+                                $.messageBox5s('@Resource.Tip', '日期输入不正确，格式为：2012-01-01');
+                                return;
+                            }
+                        }
+                        if ($("#SetPlanEndTime_Time").val() != "") {
+                            if (!isDate_yyyyMMdd($("#SetPlanEndTime_Time").val())) {
+                                $.messageBox5s('@Resource.Tip', '日期输入不正确，格式为：2012-01-01');
+                                return;
+                            }
+                        }
+                        def.AllSet($("#SetPlanBeginTime_Time").val(), $("#SetPlanEndTime_Time").val(), $("#Set_MemberId").val());
+                        $("#dailydeal3").dialog("close");
+                    }
+                });
+
+            });
+            $("#Sel_Member").unbind().click(function () {
+                $("#dailydeal").html(' <iframe src=/sysuser/lookup?owner=3" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+                $("#dailydeal").dialog({ width: 380, height: 440, title: "用户", modal: true });
+            });
+
+
+        });
+        //选择版本
+        $("#btnOpenVer").click(function () {
+            $("#dailydeal").html(' <iframe src="/Def/TestJobs/LookUp" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+            $("#dailydeal").dialog({ width: 530, height: 360, title: "选择版本", modal: true });
+        });
+        //返回列表
+        $("#btnReturn").click(function () {
+            //window.close();
+            var temps = "0";
+            returnParent(temps);
+        });
+        //查询
+        $("#btnSearch").click(function () {
+            var queryStr = $("#txtQuery").val();
+            //如果查询条件为空默认查询全部
+            if (queryStr == null) {
+                queryStr = "%";
+            }
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择版本!');
+                return;
+            }
+            //提交查询
+            queryStr = encodeURI(queryStr);
+            $("#List").datagrid('load', '/Def/Defect/GetList?querystr=' + queryStr + "&vercode=" + vercode + "&ok=" + $("#Sel_Ok").prop("checked") + '&no=' + $("#Sel_No").prop("checked"));
+        });
+        //按执行人查询
+        $("#btnSearchByExecutor").click(function () {
+            $("#dailydeal").html(' <iframe src=/sysuser/lookup?owner=2" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+            $("#dailydeal").dialog({ width: 380, height: 440, title: "用户", modal: true });
+        });
+        //刷新
+        $("#btnRefresh").click(function () {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择版本!');
+                return;
+            }
+            $("#List").datagrid('load', "/Def/Defect/GetListByVerCode?vercode=" + vercode);
+        });
+        //打印
+        $("#btnPrint").click(function () {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择版本!');
+                return;
+            }
+            var value = 1;
+            showModalDialog("/report/def/defectreport.aspx?vercode=" + vercode, [value], "dialogLeft:20px;dialogTop:50px;dialogwidth:880px; dialogheight:700px;");
+        });
+
+        $('#List').datagrid({
+            url: '@Url.Action("GetListByVerCode")?vercode=@ViewBag.vercode',
+            width:  SetGridWidthSub(10),
+            methord: 'post',
+            height: SetGridHeightSub(355),
+            fitColumns: false,
+            sortName: 'Sort',
+            sortOrder: 'asc',
+            idField: 'ItemID',
+            pageSize: 15,
+            pageList: [15, 20, 30, 40, 50],
+            pagination: true,
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            //rownumbers: true,//行号
+            columns: [[
+                {
+                    field: 'opt',
+                    title: "操作",
+                    width: 80,
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var selexcutor = "<a href='#' title='选择执行人' class='icon-search' onclick=\"SelExcutor('" + index + "');\"   ></a>";
+                        var del = "<a href='#' title='删除'  class='icon-remove' onclick=\"delrow('" + index + "');\"   ></a>";
+                        return selexcutor + del;
+                    }
+                },
+                 { field: 'Id', title: '@Resource.TitleID', width: 80, sortable: true, hidden: true },
+                { field: 'ItemID', title: '项目ID', width: 80, sortable: true, hidden: true },
+                { field: 'VerCode', title: '版本号', width: 80, sortable: true, hidden: true },
+                { field: 'Code', title: '用例编码', width: 80, sortable: true },
+                { field: 'CaseName', title: '用例名称', width: 80, sortable: true },
+                { field: 'Title', title: '步骤名称', width: 80, sortable: true },
+                     { field: 'ProcessState', title: '是否处理', width: 80, sortable: true, align: 'center', formatter: function (value) { return GetPassResut(value); } },
+                { field: 'Processor', title: '处理人', width: 80, sortable: true },
+                { field: 'ProcessDt', title: '处理时间', width: 80, sortable: true },
+                  { field: 'Creator', title: '测试人', width: 80, sortable: true },
+                { field: 'CrtDt', title: '测试时间', width: 80, sortable: true },
+
+                { field: 'Receiver', title: '接收人', width: 80, sortable: true, hidden: true },
+                { field: 'SendDt', title: '发送时间', width: 80, sortable: true, hidden: true },
+                { field: 'CloseState', title: '审核状态', width: 80, sortable: true, align: 'center', formatter: function (value) { return GetPassResut(value); } },
+                { field: 'Closer', title: '审核人', width: 80, sortable: true },
+                { field: 'CloseDt', title: '审核时间', width: 80, sortable: true },
+                { field: 'TestContent', title: '测试内容', width: 80, sortable: true, hidden: true },
+                { field: 'ResultContent', title: '测试结果内容', width: 80, sortable: true, hidden: true },
+                { field: 'Remark', title: '@Resource.TitleRemark', width: 80, sortable: true, hidden: true },
+                { field: 'MessageId', title: '消息ID', width: 80, sortable: true, hidden: true },
+                { field: 'Sort', title: '@Resource.TitleSort', width: 80, sortable: true, hidden: true },
+                { field: 'ErrorLevel', title: '错误级别', width: 80, sortable: true, align: 'center', formatter: function (value) { return GetErrorLevl(value); } },
+                { field: 'Complex', title: '复杂度', width: 80, align: 'center', sortable: true, editor: 'numberbox' },
+                { field: 'PStartDt', title: '计划开始', width: 110, sortable: true, editor: 'datebox' },
+                { field: 'PEndDt', title: '计划结束', width: 110, sortable: true, editor: 'datebox' },
+                 {
+                     field: 'optEdit',
+                     title: "开发操作",
+                     width: 80,
+                     align: 'center',
+                     formatter: function (value, row, index) {
+                         if (row.editing) {
+                             var s = '<a href="#" title="保存" class="fa fa-save" onclick="saverow(' + index + ')"></a><a href="#" title="取消" class="fa fa-reply" onclick="cancelrow(' + index + ')"></a> ';
+                             var c = '';
+                             return s + c;
+                         } else {
+                             var e = '<a href="#" title="修改" class="fa fa-pencil" onclick="editrow(' + index + ')"></a> ';
+                             return e;
+                         }
+                     }
+                 },
+                { field: 'Executor', title: '执行人', width: 80, sortable: true }
+            ]],
+            onClickRow: function (index, data) {
+                LoadListData();
+            },
+            onBeforeEdit: function (index, row) {
+                row.editing = true;
+                updateActions(index);
+            },
+            onAfterEdit: function (index, row) {
+                row.editing = false;
+                updateActions(index);
+            },
+            onCancelEdit: function (index, row) {
+                row.editing = false;
+                updateActions(index);
+            }
+        }).datagrid({
+            rowStyler: function (index, row) {
+                if (row.ProcessState) {
+                    return 'color:lime;';
+                } else {
+                    return 'color:red;'
+                }
+            }
+        });
+
+
+        //导航表格
+        var rowNav = new RowNav("#List");
+        $("#btnFirstRow").click(function () {
+            rowNav.FirstRow();
+            LoadListData();
+        });
+        $("#btnPriorRow").click(function () {
+            rowNav.PriorRow();
+            LoadListData();
+        });
+        $("#btnNextRow").click(function () {
+            rowNav.NextRow();
+            LoadListData();
+        });
+        $("#btnLastRow").click(function () {
+            rowNav.LastRow();
+            LoadListData();
+        });
+        //发送信息
+        $("#btnSend").click(function () {
+            $("#dailydeal").html(' <iframe src=/MIS/WebIM/SelMember" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+            $("#dailydeal").dialog({ width: 420, height: 450, title: "新增", modal: true });
+        });
+
+        $(window).resize(function () {
+            $('#List').datagrid('resize', {
+                height: SetGridHeightSub(355),
+                width: SetGridWidthSub(10)
+            });
+          
+        });
+    });
+    //更新按钮状态
+    function updateActions(index) {
+        $('#List').datagrid('updateRow', {
+            index: index,
+            row: { action: '' }
+        });
+    }
+
+    //保存数据
+    function saverow(index) {
+        $('#List').datagrid('selectRow', index);//先选中
+        var row = $('#stepsList').datagrid('getSelected');//获取选中
+        $('#List').datagrid('endEdit', index);//结束编辑
+        //保存数据到后台
+        $.ajax({
+            url: "/Def/TestCaseSteps/Edit",
+            type: "Post",
+            data: row,
+            dataType: "json",
+            success: function (data) {
+                if (data.type == 0) {
+                    $('#stepsList').datagrid('rejectChanges');//修改失败撤销修改
+                }
+                $.messageBox5s('@Resource.Tip', data.message);
+            }
+        });
+        cancelrow(index);//保存后返回操作
+
+    }
+    //开始编辑
+    function editrow(index) {
+        $('#List').datagrid('selectRow', index).datagrid('beginEdit', index);
+    }
+    //取消编辑
+    function cancelrow(index) {
+        $('#List').datagrid('cancelEdit', index);
+    }
+
+    function LoadListData() {
+        var rowData = $('#List').datagrid('getSelected');
+        $("#TestContentTitle").html(rowData.TestContent);
+        editor1.html(rowData.Remark);
+        editor2.html(rowData.ResultContent);
+    }
+
+
+    function RetureSelMember(result) {
+        ReturnSelMemberByClose();
+        var row = $('#List').datagrid('getSelected');
+        if (row == null) {
+            $.messageBox5s('@Resource.Tip', '@Resource.PlaseChooseToOperatingRecords');
+            return;
+        }
+        var info = "";
+        for (var i = 0; i < ids.length; i++) {
+            var rowData = jQuery("#List").jqGrid('getRowData', ids[0]);
+            info += i + ">用例名称:" + rowData.CodeTitle + " 缺陷步骤:" + rowData.Title;
+        }
+        if (result == null) {
+            return;
+        }
+        var receiver, receiverName; var msgs = result.split('^');
+        if (msgs.length != 2) {
+            $.messageBox5s('@Resource.Tip', '接收人员信息错误!');
+            return;
+        }
+        receiver = msgs[0];
+        receiverTitle = msgs[1];
+        //版本号+缺陷序号1,缺陷序号2,,,请你确认
+        var vercode = $("#vercode").val();
+        var vername = $("#name").val();
+        if (vercode == null || vercode == "") {
+            $.messageBox5s('@Resource.Tip', '测试任务无效!');
+            return;
+        }
+        var message = "版本号:" + vercode + " 版本名称:" + vername + " ,已提交缺陷记录:" + info;
+        $.ajax({
+            url: "/Def/Defect/SendMessage",
+            //编辑为Edit
+            type: "Post",
+            data: { ids: "" + ids + "", message: message, receiver: receiver, receiverTitle: receiverTitle },
+            dataType: "json",
+            success: function (data) {
+                $.messageBox5s('@Resource.Tip', data.message);
+            }
+        });
+        $("#List").datagrid('load');
+    }
+
+    //ifram 返回
+    function frameReturnByClose() {
+        $("#modalwindow").window('close');
+    }
+    function frameReturnReLoad(Code) {
+        $("#List").datagrid('load');
+  
+    }
+</script>

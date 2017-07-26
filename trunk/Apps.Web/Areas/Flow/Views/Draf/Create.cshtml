@@ -1,0 +1,135 @@
+﻿@model Apps.Models.Flow.Flow_FormContentModel
+@using Apps.Common;
+@using Apps.Models.Flow;
+@using Apps.Web.Core;
+@using Apps.Models.Sys;
+@using Apps.Models.Enum;
+@using Apps.Locale;
+@{
+    ViewBag.Title = "创建";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+    List<permModel> perm = null;
+}
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#btnSave").click(function () {
+            if ($("#Title").val() == "") {
+                $.messageBox5s("提示", "表单标题必须填写！");
+                return false;
+            }
+            if (CheckForm()) {
+                $.ajax({
+                    url: "@Url.Action("Create")",
+                    type: "Post",
+                    data: $("form").serialize(),
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.type == 1) {
+                            window.parent.frameReturnByMes("表单创建成功！");
+                            window.parent.frameReturnByClose()
+                        }
+                        else {
+                            window.parent.frameReturnByMes(data.message);
+                        }
+                    }
+                });
+            }
+            return false;
+        });
+        $("#btnReturn").click(function () {
+                $.messager.confirm('@Resource.Tip', '没有保存的数据将会丢失，你确定要返回吗？', function (r) {
+                    if (r) {
+                        window.parent.frameReturnByClose();
+                    }
+                });
+        });
+        $(function () {
+            //获得最低的input对于整个高层的高度
+            var maxTop = new Array();
+            var topValue = 0;
+            var topValueHeight = 0;
+            $(".easyui-draggable").each(function (i) {
+                var currentValue = parseInt($(this).css("top").replace("px", ""));
+                maxTop.push(currentValue);
+                if (currentValue >= Math.max.apply(Math, maxTop)) {
+                    topValueHeight = $(this).height();
+                }
+            });
+            topValue = Math.max.apply(Math, maxTop);
+            //设置高度来改变美观度
+            $("#setFormLayout").height(topValue + topValueHeight + 20);
+            $('.easyui-draggable').draggable("disable");
+        });
+    });
+</script>
+
+    <div class="mvctool ">
+        @Html.ToolButton("btnSave", "fa fa-save", Resource.Save,ref perm, "Create", true)
+        @Html.ToolButton("btnReturn", "fa fa-reply", Resource.Reply, false)
+    </div>
+    @using (Html.BeginForm())
+    {
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.FormId)
+        @Html.HiddenFor(model => model.UserId)
+        <input id="CreateTime" type="hidden" name="CreateTime" value="2000-1-1" />
+        <input id="TimeOut" type="hidden" name="TimeOut" value="2111-1-1" />
+        <input id="Title" type="hidden" name="Title" value="User Post" />
+        <div id="setFormLayout" class="easyui-panel">
+            @Html.Raw(ViewBag.Html)
+        </div>
+        <table class="formtable">
+            <tbody>
+                <tr>
+                    <th style='width:100px; text-align:right;'>紧急程度 :</th>
+                    <td>
+                        <select name="FormLevel" id="FormLevel">
+                            <option value="@((int)FlowFormLevelEnum.Ordinary)">普通</option>
+                            <option value="@((int)FlowFormLevelEnum.Major)">重要</option>
+                            <option value="@((int)FlowFormLevelEnum.Urgent)">紧急</option>
+                        </select>
+                    </td>
+                </tr>
+                @if (ViewBag.Checker == null)
+                {
+                    <tr>
+                        <th>
+                            审核人：
+                        </th>
+                        <td>
+                            @Html.HiddenFor(model => model.CustomMember)
+                            <input id="CustomMemberList" name="CustomMemberList" readonly="readonly" type="text" style="width: 90px; display: inline; background: #dedede; ">
+                            <a class="fa fa-plus-square color-gray fa-lg" id="selExc" href="javascript:void(0)"></a>
+                            <script type="text/javascript">
+                                $(function () {
+                                    $("#selExc").click(function () {
+                                        $("#modalwindow").html("<iframe width='100%' height='100%' scrolling='no' frameborder='0'' src='/SysHelper/UserLookUp'></iframe>");
+                                        $("#modalwindow").window({ title: '选择人员', width: 620, height: 388, iconCls: 'fa fa-plus' }).window('open');
+                                    });
+                                });
+
+                                function SetSelResult(result, resultName) {
+                                    $("#CustomMember").val(result);
+                                    $("#CustomMemberList").val(resultName);
+                                }
+                                function GetSelResult() {
+                                    var arrayObj = new Array()
+                                    arrayObj[0] = $("#CustomMember").val();
+                                    arrayObj[1] = $("#CustomMemberList").val();
+                                    return arrayObj;
+                                }
+                                //ifram 返回
+                                function frameReturnByClose() {
+                                    $("#modalwindow").window('close');
+                                }
+                            </script>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+        <div id="modalwindow" class="easyui-window" data-options="modal:true,closed:true,minimizable:false,shadow:false"></div>
+
+    }

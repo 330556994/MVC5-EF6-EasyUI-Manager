@@ -1,0 +1,105 @@
+﻿@model Apps.Models.DEF.DEF_TestCaseModel
+@using Apps.Common;
+@using Apps.Models.Sys;
+@using Apps.Web.Core;
+@using Apps.Locale;
+@{
+    ViewBag.Title = "创建";
+    Layout = "~/Views/Shared/_Index_LayoutEdit.cshtml";
+    List<permModel> perm = null;
+}
+
+<script type="text/javascript">
+    $(function () {
+        $("#Sort").val(0);
+        $("#btnSave").click(function () {
+            if ($("form").valid()) {
+                $.ajax({
+                    url: "@Url.Action("Create")",
+                type: "Post",
+                data: $("form").serialize(),
+                dataType: "json",
+                success: function (data) {
+                    if (data.type == 1) {
+                        window.parent.frameReturnByMes(data.message);
+                        window.parent.frameReturnByReload(true);
+                        window.parent.frameReturnByClose()
+                    }
+                    else {
+                        window.parent.frameReturnByMes(data.message);
+                    }
+                }
+            });
+        }
+        return false;
+    });
+    $("#btnReturn").click(function () {
+        window.parent.frameReturnByClose();
+    });
+        //分类combotree
+    $('#caseTypeTree').combotree({
+        url: '/DEF/caseType/GetListByComTree?allFlag=0'
+        , onSelect: function (node) {
+            $("#ModuleId").val(node.id);
+        }, onLoadSuccess: function (node, data) { //加载成功选择第一行
+            $('#caseTypeTree').combotree("setValue", "_undefined");
+        }
+
+
+    });
+});
+</script>
+<div class="mvctool bgb">
+@Html.ToolButton("btnSave", "fa fa-save", Resource.Save,ref perm, "Save", true)
+@Html.ToolButton("btnReturn", "fa fa-reply", Resource.Reply, false)
+</div>
+@using (Html.BeginForm())
+{
+ <table class="formtable">
+    <tbody>
+        <tr>
+            <th>
+                @Html.LabelFor(model => model.Code)：
+            </th>
+          <td>
+                @Html.EditorFor(model => model.Code)
+            @Html.ValidationMessageFor(model => model.Code)</td>
+        </tr>
+        <tr>
+            <th>
+                @Html.LabelFor(model => model.Name)：
+            </th>
+          <td>
+                @Html.EditorFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name)</td>
+        </tr>
+        <tr>
+            <th>
+                @Html.LabelFor(model => model.Description)：
+            </th>
+          <td>
+                @Html.TextAreaFor(model => model.Description, new { style = "width:400px; height:125px;" })
+            @Html.ValidationMessageFor(model => model.Description)
+
+            </td>
+        </tr>
+        <tr>
+            <th>
+                @Html.LabelFor(model => model.ModuleId)：
+            </th>
+          <td>
+                @Html.HiddenFor(model => model.ModuleId)
+                <input class="easyui-combotree" id="caseTypeTree" style="width:150px;">
+            @Html.ValidationMessageFor(model => model.ModuleId)</td>
+        </tr>
+        <tr>
+            <th>
+                @Html.LabelFor(model => model.Sort)：
+            </th>
+          <td>
+                @Html.EditorFor(model => model.Sort)
+            @Html.ValidationMessageFor(model => model.Sort)</td>
+        </tr>
+    </tbody>
+</table>
+}

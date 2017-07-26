@@ -1,0 +1,416 @@
+﻿@model Apps.Models.DEF.DEF_TestJobsDetailStepsModel
+@using System.Globalization;
+@using Apps.Locale;
+@using Apps.Models.Sys;
+@using Apps.Common;
+@using Apps.Web.Core;
+@{
+    ViewBag.Title = "开发";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+    List<permModel> perm = (List<permModel>)ViewBag.perm;
+    if (perm == null)
+    {
+        perm = new List<permModel>();
+    }
+   
+}
+<script src="@Url.Content("~/Scripts/kindeditor/kindeditor-min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/def_tools.js")" type="text/javascript"></script>
+<style type="text/css">
+    .ui-tabs .ui-tabs-panel {
+        padding: 5px 0;
+    }
+</style>
+<div class="mvctool">
+    @Html.ToolButton("btnRefresh", "fa fa-refresh", Resource.Refresh, true)
+    @Html.ToolButton("btnCreateDefect", "fa fa-plus", "新增用例步骤", true)
+    @Html.ToolButton("btnCreateDefectReport", "fa fa-list", "生成缺陷报告", true)
+    @Html.ToolButton("btnSearchByExecutor", "fa fa-search", "按执行人查询", true)
+</div>
+    @Html.Partial("~/Views/Shared/_DEF_ComboGrid.cshtml")
+<table>
+    <tr>
+        <td id="myLeft"style="padding-right:5px;">
+            <table id="ItemList">
+            </table>
+            <div id="ItemListPager">
+            </div>
+        </td>
+        <td valign="top">
+            <div id="tt" class="easyui-tabs" style="width: 610px;">
+                <div title="执行开发步骤" style="padding: 3px;">
+                    <table id="List">
+                    </table>
+                    <div id="ListPager">
+                    </div>
+                    <div>
+                        @using (Html.BeginForm())
+                        {
+                            @Html.ValidationSummary(true)
+                            <div class="gray pt5">
+                              结果：
+                            </div>
+                            <textarea id="ContentBody" style="width: 600px; height: 100px; visibility: hidden;"></textarea>
+                           
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="clear box-buts-bot pt5" style="text-align: left">
+                <div class="but-row pr10" style="display: inline">
+                    <!--不可用class="but-disabled"-->
+                    <a id="btnFirstRow" href="#" title="第一行"><span class="arrow-first"></span></a><a
+                        id="btnPriorRow" href="#" title="上一行"><span class="arrow-pre"></span></a><a id="btnNextRow"
+                            href="#" title="下一行"><span class="arrow-next"></span></a><a id="btnLastRow" href="#"
+                                title="最后一行"><span class="arrow-last"></span></a>
+                </div>
+                @Html.ToolButton("btnPass", "fa fa-check", "完成", true)
+                @Html.ToolButton("btnFail", "fa fa-square-o", "未完成", true)
+            </div>
+        </td>
+    </tr>
+</table>
+<div id="dailydeal">
+</div>
+
+
+<script type="text/javascript">
+    //开发类
+    function Test() {
+        //property
+        this.curId = null;
+        //当前行        
+        //function
+        if (typeof Test._initialized == "undefined") {
+            Test._initialized = true;
+            //////////////////////////////////////
+            Test.prototype.About = function () {
+                $.messageBox5s('@Resource.Tip', 'Test 1.0');
+            };
+            //生成缺陷报告
+            Test.prototype.CreateDefectReport = function () {
+                var vercode = $("#vercode").val();
+                if (vercode == null || vercode == "") {
+                    $.messageBox5s('@Resource.Tip', '开发任务无效!');
+                    return;
+                }
+                $.ajax({
+                    url: "/Def/Defect/CreateDefectReport",
+                    type: "Post",
+                    data: { vercode: vercode },
+                    dataType: "json",
+                    success: function (data) {
+                        //刷新
+                        $.messageBox5s('@Resource.Tip', data.message);
+                        jQuery("#ItemList").trigger("reloadGrid");
+                        $("#List").datagrid('load');
+                    }
+                });
+            };
+            //完成，没有完成
+            Test.prototype.RunDev = function (result) {
+
+                var row = $('#List').datagrid('getSelected');
+                if (row == null) {
+                    $.messageBox5s('@Resource.Tip', '请选择开发步骤!');
+                    return;
+                }
+                var resultContext = editor1.html();
+                $("#TestContent").val(resultContext);
+                if (resultContext.length > 8000) {
+                    $.messageBox5s('@Resource.Tip', '测试内容总字数超过最大值8000个字,如果有图片请用图片上传不要粘贴图片');
+                    return;
+                }
+                $("#DevFinFlag").val(result);
+                $.ajax({
+                    url: "/Def/TestJobsDetailSteps/RunDev",
+                    type: "Post",
+                    data: { VerCode: row.VerCode, Code: row.Code, ItemID: row.ItemID, Result: result, ResultContent: resultContext },
+                    dataType: "json",
+                    success: function (data) {
+                        //刷新
+                        $.messageBox5s('@Resource.Tip', data.message);
+                        $("#List").datagrid('load');
+                    }
+                });
+            };
+            //加载数据到编辑区
+            Test.prototype.LoadData = function (id) {
+               
+            };
+          
+        }
+    }
+</script>
+<script type="text/javascript">
+    var curcode;
+    var editor1;
+    KindEditor.ready(function (K) {
+        editor1 = K.create('#ContentBody', {
+            uploadJson: '/Resources/kindeditor/asp.net/upload_json.ashx',
+            fileManagerJson: '/Resources/kindeditor/asp.net/file_manager_json.ashx',
+            allowFileManager: false,
+            newlineTag: 'br',
+            items: [
+						'undo', 'redo', '|', 'bold', 'italic', 'underline', 'image', 'fontname', 'fontsize', 'forecolor', 'hilitecolor', 'link', 'unlink', 'fullscreen', 'insertfile'
+            ]
+        });
+    });
+    //删除
+    function Delete(id) {
+        $.messager.confirm('@Resource.Tip', '要删除开发步骤?', function (r) {
+            if (r) {
+                var rowData = jQuery("#List").jqGrid('getRowData', id);
+                $.ajax({
+                    url: "/Def/Test/Delete",
+                    type: "Post",
+                    data: { itemid: rowData.ItemID, vercode: rowData.VerCode, code: rowData.Code },
+                    dataType: "json",
+                    success: function (data) {
+                        //刷新
+                        jQuery("#List").trigger("reloadGrid");
+                        $.messageBox5s('@Resource.Tip', data.message);
+                    }
+                });
+            }
+        });
+
+    };
+    //新增后执行
+    function ReturnCreate() {
+        jQuery("#List").trigger("reloadGrid");
+    }
+    //内嵌窗口关闭
+    function ReturnCloseDialog() {
+        $("#dailydeal").dialog("close");
+    }
+
+    $(function () {
+        // Tabs
+        $('#tabs').tabs();
+        $("#accordion").accordion({ header: "h5" });
+
+        //新增缺陷
+        $("#btnCreateDefect").click(function () {
+            var vercode = $("#vercode").val();
+            if (vercode == null || vercode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择开发任务!');
+                return;
+            }
+            if (curcode == null || curcode == "") {
+                $.messageBox5s('@Resource.Tip', '请选择开发项目!');
+                return;
+            }
+            $("#dailydeal").html(' <iframe src="/Def/TestJobsDetailSteps/CreateDefect?vercode=' + vercode + '&code=' + curcode + '" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+            $("#dailydeal").dialog({ width: 670, height: 480, title: "新增", modal: true });
+        });
+        //选择版本
+        $("#btnOpenVer").click(function () {
+            $("#dailydeal").html(' <iframe src="/Def/TestJobs/LookUp" width="500px"  height="300px" scrolling="no" frameborder="0"  ></iframe>');
+            $("#dailydeal").dialog({ width: 530, height: 360, title: "选择版本", modal: true });
+        });
+
+
+        $('#ItemList').datagrid({
+            url: '/Def/FollowPlan/GetListNoAction?vercode=@ViewBag.vercode',
+            width: SetGridWidthSub(630),
+            methord: 'post',
+            height: SetGridHeightSub(83),
+            fitColumns: true,
+            sortName: 'Sort',
+            sortOrder: 'asc',
+            idField: 'Id',
+            pageSize: 15,
+            pageList: [15, 20, 30, 40, 50],
+            pagination: true,
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            //rownumbers: true,//行号
+            columns: [[
+                { field: 'Id', title: '@Resource.TitleID', width: 80, sortable: true, hidden: true },
+                { field: 'VerCode', title: '版本号', width: 80, sortable: true },
+                { field: 'Code', title: '用例编码', width: 80, sortable: true },
+                { field: 'Name', title: '@Resource.TitleName', width: 80, sortable: true },
+                { field: 'Description', title: '@Resource.TitleRemark', width: 80, sortable: true },
+                {
+                    field: 'Result', title: '开发结果', width: 80, sortable: true, formatter: function (value) {
+                        return GetPassResut(value);
+                    }
+                },
+                { field: 'Sort', title: '@Resource.TitleSort', width: 80, sortable: true },
+                { field: 'ExSort', title: '', width: 80, sortable: true, hidden: true },
+                { field: 'Lock', title: '', width: 80, sortable: true, hidden: true },
+                { field: 'Developer', title: '开发负责人', width: 80, sortable: true },
+                { field: 'Tester', title: '测试负责人', width: 80, sortable: true },
+                { field: 'FinDt', title: '完成时间', width: 80, sortable: true },
+                { field: 'TestRequestFlag', title: '', width: 80, sortable: true, hidden: true },
+                {
+                    field: 'DevFinFlag', title: '开发结果', width: 80, sortable: true
+                },
+            ]],
+            onClickRow: function (index, data) {
+                var row = $('#ItemList').datagrid('getSelected');
+                //加载开发步骤
+                var vercode = $("#vercode").val();
+                curcode = row.Code;
+                $("#List").datagrid('load',{ vercode: vercode,code:curcode }); 
+                $("#ItemID").val("");
+                $("#VerCode").val("");
+                $("#Code").val("");
+                $("#Title").val("");
+                $("#TestContent").val("");
+                $("#Result").val("");
+                $("#Sort").val("");
+                $("#ResultContent").val("");
+                $("#TestContentTitle").html("");
+                $("#TextItemID").val("");
+                $("#TextTitle").val("");
+            }
+        });
+
+    });
+    function ReturnSelectUser(id, val, name) {
+
+        var row = $('#ItemList').datagrid('getSelected');
+        if (row != null) {
+            $.messageBox5s('@Resource.Tip', '请从左边选择一个用例，来操作右边!');
+            return;
+        }
+        //如果查询条件为空默认查询全部
+        if (val == null) {
+            return;
+        }
+        var vercode = $("#vercode").val();
+        if (vercode == null || vercode == "") {
+            $.messagebox("请选择版本");
+            return;
+        }
+        //提交查询
+        val = encodeURI(val);
+        var vercode = $("#vercode").val();
+        $("#List").datagrid('load', "/Def/FollowPlan/GetListByCode?vercode=" + vercode + "&code=" + curcode + "&querystr=" + val);
+    }
+    $(function () {
+        //按执行人查询
+        $("#btnSearchByExecutor").click(function () {
+            var ids = jQuery("#ItemList").jqGrid('getGridParam', 'selrow');
+            if (ids == null || ids.length < 1) {
+                $.messageBox5s('@Resource.Tip', '请从左边选择一个用例，来操作右边!');
+                return;
+            }
+            $("#dailydeal").html(' <iframe src=/sysuser/lookup?owner=1" width="100%"  height="99%" scrolling="no" frameborder="0"  ></iframe>');
+            $("#dailydeal").dialog({ width: 380, height: 440, title: "用户", modal: true });
+        });
+        var test = new Test();
+        //生成缺陷报告
+        $("#btnCreateDefectReport").click(function () {
+            test.CreateDefectReport();
+        });
+        //清空开发结果
+        $("#btnClearTestContext").click(function () {
+            test.ClearTestContext();
+        });        //刷新
+        $("#btnRefresh").click(function () {
+            var vercode = $("#vercode").val();
+            $("#List").datagrid('load', "/Def/FollowPlan/GetListByCode?vercode=" + vercode + "&code=" + curcode);
+        });
+        //通过
+        $("#btnPass").click(function () {
+            test.RunDev(true);
+        });
+        //未通过
+        $("#btnFail").click(function () {
+            test.RunDev(false);
+        });
+        //取消
+        $("#btnCancel").click(function () {
+            var id = $("#ItemID").val();
+            if (id == null || id == "") {
+                $.messageBox5s('@Resource.Tip', '请选择开发步骤!');
+            }
+            test.LoadData(id);
+            test.RunDev(null);
+        });
+
+        $('#List').datagrid({
+            url: '/Def/FollowPlan/GetListByCode',
+            width: 600,
+            methord: 'post',
+            height: SetGridHeightSub(314),
+            fitColumns: true,
+            sortName: 'Sort',
+            sortOrder: 'asc',
+            idField: 'Id',
+            pageSize: 15,
+            pageList: [15, 20, 30, 40, 50],
+            pagination: true,
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            //rownumbers: true,//行号
+            columns: [[
+                { field: 'Id', title: '', width: 80, sortable: true, hidden: true },
+                { field: 'ItemID', title: '项目ID', width: 80, sortable: true, hidden: true },
+                { field: 'VerCode', title: '版本号', width: 80, sortable: true, hidden: true },
+                { field: 'Code', title: '用例编码', width: 80, sortable: true, hidden: true },
+                { field: 'Title', title: '开发步骤', width: 180, sortable: true },
+                { field: 'TestContent', title: '开发内容', width: 80, sortable: true },
+                { field: 'Result', title: '结果', width: 80, sortable: true, hidden: true },
+                { field: 'Sort', title: '@Resource.TitleSort', width: 80, sortable: true, hidden: true },
+                { field: 'ResultContent', title: '开发结果内容', width: 80, sortable: true },
+                { field: 'ExSort', title: '执行顺序', width: 80, sortable: true },
+                { field: 'StepType', title: '类型', width: 80, sortable: true, hidden: true },
+                { field: 'Tester', title: '', width: 80, sortable: true, hidden: true },
+                { field: 'TestDt', title: '', width: 80, sortable: true, hidden: true },
+                { field: 'Developer', title: '开发人', width: 80, sortable: true },
+                { field: 'PlanStartDt', title: '计划开始', width: 80, sortable: true },
+                { field: 'PlanEndDt', title: '计划结束', width: 80, sortable: true },
+                { field: 'FinDt', title: '实际完成', width: 80, sortable: true },
+                { field: 'TestRequestFlag', title: '测试请求', width: 80, sortable: true },
+                {
+                    field: 'DevFinFlag', title: '', width: 80, sortable: true, formatter: function (value) {
+                        return GetPassResut(value);
+                    }
+                },
+            ]],
+            onClickRow: function (index, data) {
+                var row = $('#List').datagrid('getSelected');
+                test.LoadData(row.Id);
+                test.curId = row.Id;
+            }
+        });
+
+
+        //导航表格
+        var rowNav = new RowNav("#List");
+        $("#btnFirstRow").click(function () {
+            rowNav.FirstRow();
+            LoadListData();
+        });
+        $("#btnPriorRow").click(function () {
+            rowNav.PriorRow();
+            LoadListData();
+        });
+        $("#btnNextRow").click(function () {
+            rowNav.NextRow();
+            LoadListData();
+        });
+        $("#btnLastRow").click(function () {
+            rowNav.LastRow();
+            LoadListData();
+        });
+
+        $(window).resize(function () {
+            $('#List').datagrid('resize', {
+                height: SetGridHeightSub(314),
+            });
+            $('#ItemList').datagrid('resize', {
+                height: SetGridHeightSub(83),
+                width: SetGridWidthSub(630),
+            });
+        });
+    });
+
+    function LoadListData() {
+
+    }
+</script>

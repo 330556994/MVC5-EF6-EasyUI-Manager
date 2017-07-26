@@ -1,0 +1,106 @@
+﻿@model Apps.Models.DEF.DEF_TestJobsModel
+@using System.Globalization;
+@using Apps.Models.Sys;
+@using Apps.Common;
+@using Apps.Web.Core;
+@using Apps.Locale;
+@{
+    ViewBag.Title = "测试任务";
+    Layout = "~/Views/Shared/_Index_Layout.cshtml";
+    List<permModel> perm = (List<permModel>)ViewBag.perm;
+    if (perm == null)
+    {
+        perm = new List<permModel>();
+    }
+   
+}
+<div class="mvctool">
+<input id="txtQuery" type="text" class="searchText"/>
+@*操作*@
+@Html.ToolButton("btnSearch", "fa fa-search", Resource.Query,true)
+@Html.ToolButton("btnRefresh", "fa fa-refresh",Resource.Refresh, true)
+@Html.ToolButton("btnSelectby", "fa fa-arrow-right", "选择", true)
+<input id="ShowCloseItem" type="checkbox" />显示关闭的任务
+</div>
+<div>
+    <table id="List">
+    </table>
+    <div id="ListPager">
+    </div>
+</div>
+<script type="text/javascript">    $(function () {
+        $("#btnSelectby").click(function () {
+            var id = jQuery("#List").jqGrid('getGridParam', 'selrow');
+            if (id == null) {
+                 $.messageBox5s('@Resource.Tip', "请选择一行");
+                
+                return;
+            }
+            var rowData = jQuery("#List").jqGrid('getRowData', id);
+            window.parent.ReturnOpenVer(rowData.VerCode, rowData.Name);
+            window.parent.ReturnCloseDialog();        });
+        //返回列表
+        $("#btnReturn").click(function () {
+            window.parent.ReturnCloseDialog();
+        });
+        $("#ShowCloseItem").click(function () {
+            jQuery("#List").jqGrid('setGridParam', { url: '/Def/TestJobs/LookUp?showclose=' + $("#ShowCloseItem").prop("checked"), page: 1 }).trigger("reloadGrid");
+        });
+        //查询
+        $("#btnSearch").click(function () {
+            var queryStr = $("#txtQuery").val();
+            //如果查询条件为空默认查询全部
+            if (queryStr == null) {
+                queryStr = "%";
+            }
+            
+            //提交查询
+            queryStr = encodeURI(queryStr);
+            jQuery("#List").jqGrid('setGridParam', { url: '/Def/TestJobs/LookUp?showclose=' + $("#ShowCloseItem").prop("checked") + '&querystr=' + queryStr, page: 1 }).trigger("reloadGrid");        });
+        //刷新
+        $("#btnRefresh").click(function () {
+            jQuery("#List").jqGrid('setGridParam', { url: '/Def/TestJobs/LookUp?showclose=' + $("#ShowCloseItem").prop("checked"), page: 1 }).trigger("reloadGrid");
+        });
+        $('#List').datagrid({
+            url: '/Def/TestJobs/LookUp?showclose=' + $("#ShowCloseItem").prop("checked"),
+            datatype: "json",
+            colNames: ['版本号', '名称', '测试通过', '关闭状态'],
+            colModel: [                    
+                    { name: 'VerCode', width: 60, key: true, hidden: false, frozen: true }, //ID
+					{   name: 'Name', width: 150 },
+					{ name: 'Result', width: 60 },
+					{ name: 'CloseState', width: 60 },					                    ],            rowNum: 1000,
+            //rowList: [15, 25, 35],
+            pager: '#ListPager',
+            sortname: 'ID',
+            viewrecords: true,
+            sortorder: "desc",
+            mtype: 'POST',
+            //height: 'auto',
+            autowidth: true,
+            shrinkToFit: true,
+            multiselect: false,
+            loadComplete: function () {
+                $("#gview_List th").css("text-align", "left");
+                $("#gview_List td").css("text-overflow", "ellipsis");                
+                var ids = jQuery("#List").jqGrid('getDataIDs');
+                for (var i = 0; i < ids.length; i++) {
+                    //设置测试状态,未通过：红色,通过：蓝色，未测试：黑色                    
+                    var rowData = jQuery("#List").jqGrid('getRowData', ids[i]);
+                    var r = ids[i].replace(".", "\\.");
+                    $("#" + r + " td").css("color", "#000000");
+                    if (rowData.Result == "true") {
+                        $("#" + r + " td").css("color", "#008800");
+                    }
+                    if (rowData.Result == "false") {
+                        $("#" + r + " td").css("color", "#ff0000");
+                    }
+                }
+            }
+        });        $(window).resize(function () {
+            $("#List").setGridWidth( SetGridWidthSub(10));
+            $("#List").setGridHeight($(window).height() - 90);
+        });
+        $("#List").setGridWidth( SetGridWidthSub(10));
+        $("#List").setGridHeight($(window).height() - 90);    });
+</script>

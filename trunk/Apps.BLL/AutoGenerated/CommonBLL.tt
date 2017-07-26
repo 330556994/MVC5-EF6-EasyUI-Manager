@@ -1,0 +1,55 @@
+﻿<#@ template language="C#" debug="false" hostspecific="true"#>
+<#@ include file="../../Apps.Models/Common.ttinclude"#><#@ 
+ output extension=".cs"#>
+ <#
+const string usingName = "";
+const string inputFile = @"../../Apps.Models/DB.edmx";
+var textTransform = DynamicTextTransformation.Create(this);
+var code = new CodeGenerationTools(this);
+var ef = new MetadataTools(this);
+var typeMapper = new TypeMapper(code, ef, textTransform.Errors);
+var	fileManager = EntityFrameworkTemplateFileManager.Create(this);
+var itemCollection = new EdmMetadataLoader(textTransform.Host, textTransform.Errors).CreateEdmItemCollection(inputFile);
+var codeStringGenerator = new CodeStringGenerator(code, typeMapper, ef);
+
+if (!typeMapper.VerifyCaseInsensitiveTypeUniqueness(typeMapper.GetAllGlobalItems(itemCollection), inputFile))
+{
+    return string.Empty;
+}
+
+WriteHeader(codeStringGenerator, fileManager);
+
+foreach (var entity in typeMapper.GetItemsToGenerate<EntityType>(itemCollection))
+{
+    if(entity.Name.StartsWith("Sys") || entity.Name.StartsWith("JOB"))
+        {
+            fileManager.StartNewFile(entity.Name + "BLL.cs");
+			var simpleProperties = typeMapper.GetSimpleProperties(entity);
+#>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Apps.Models;
+using Apps.Common;
+using Microsoft.Practices.Unity;
+using System.Transactions;
+using Apps.IBLL;
+using Apps.IDAL;
+using Apps.BLL.Core;
+using Apps.Locale;
+using Apps.Models<#=entity.Name.IndexOf("_")>0?"."+entity.Name.Substring(0,entity.Name.IndexOf("_")):".Sys" #>;
+namespace Apps.BLL
+{
+	public partial class <#=entity.Name #>BLL: Virtual_<#=entity.Name #>BLL,I<#=entity.Name #>BLL
+	{
+        
+
+	}
+<#
+            EndNamespace(code);
+        }
+}
+
+fileManager.Process();
+
+#>
